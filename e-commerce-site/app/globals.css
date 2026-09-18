@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: 'Kugile';
+    src: url('/fonts/Kugile_Demo.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Batica';
+    src: url('/fonts/BaticaSans-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Firlest';
+    src: url('/fonts/Firlest-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: 'Gebuk';
+    src: url('/fonts/Gebuk-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
