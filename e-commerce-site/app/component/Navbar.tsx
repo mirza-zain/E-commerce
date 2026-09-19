@@ -18,9 +18,9 @@ export default function Navbar() {
         </div>
         <div className="px-10">
             <ul className="flex justify-center items-center gap-10">
-                <li><Link href={'/'}><MagnifyingGlassIcon size={35} /></Link></li>
-                <li><Link href={"/"}><ShoppingBagIcon size={35} /></Link></li>
-                <li><Link href={"/"}><UserCircleIcon size={35} /></Link></li>
+                <li><Link href={'/'}><MagnifyingGlassIcon size={30} /></Link></li>
+                <li><Link href={"/"}><ShoppingBagIcon size={30} /></Link></li>
+                <li><Link href={"/"}><UserCircleIcon size={30} /></Link></li>
             </ul>
         </div>
     </nav>
