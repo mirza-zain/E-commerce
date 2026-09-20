@@ -5,14 +5,14 @@ import Products from "./screens/Products";
 export default function Home() {
   return (
     <>
-      <header className="mt-10 w-full min-h-screen p-2">
-        <div className="flex justify-center items-center">
-          <div className="w-1/2 text-center mx-10">
-            <h1 className=" text-8xl font-bold tracking-[0.2] uppercase">Explore Premium Scent</h1>
-            <button className="bg-black hover:bg-gray-500 duration-300 ease-in-out text-white px-10 py-5 text-2xl font-semibold rounded-md mt-10 uppercase" >Shop Now</button>
+      <header className="w-full min-h-[85vh] flex items-center justify-center py-10 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="w-full flex flex-col-reverse lg:flex-row justify-between items-center gap-10">
+          <div className="w-full lg:w-1/2 text-center lg:text-left">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-[0.05em] uppercase leading-tight">Explore Premium Scent</h1>
+            <button className="bg-black hover:bg-neutral-800 duration-300 ease-in-out text-white px-8 py-4 sm:px-10 sm:py-5 text-xl sm:text-2xl font-semibold rounded-md mt-8 uppercase tracking-wide">Shop Now</button>
           </div>
-          <div className="w-1/2 flex justify-center items-center">
-              <img src="/images/icon2.png" className="w-3/5 object-cover rounded-full border" alt="icon" />
+          <div className="w-full lg:w-1/2 flex justify-center items-center">
+              <img src="/images/icon2.png" className="w-4/5 sm:w-3/5 lg:w-4/5 max-w-md aspect-square object-cover rounded-full border-2 border-neutral-200 shadow-lg" alt="icon" />
           </div>
         </div>
       </header>
