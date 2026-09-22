@@ -3,9 +3,9 @@ import ProductDetails from "./ProductDetails"
 import {prodDetails} from "@/app/testData/productDetails"
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function UserPage({params}: Props){

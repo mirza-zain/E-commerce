@@ -1,9 +1,9 @@
 import {prodDetails} from "../../../testData/productDetails"
 
 type Props = {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export async function GET(request: Request, {params}: Props) {
