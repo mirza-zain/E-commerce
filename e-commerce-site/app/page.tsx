@@ -1,6 +1,6 @@
 import Blog from "./screens/Blog";
-import FeaturedItems from "./screens/FeaturedItems";
-import Products from "./screens/Products";
+import FeaturedItems from "./screens/SpecialItems";
+import Products from "./screens/FeaturedProducts";
 
 export default function Home() {
   return (
