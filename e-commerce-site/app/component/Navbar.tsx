@@ -2,10 +2,17 @@
 
 import { ListIcon, MagnifyingGlassIcon, ShoppingBagIcon, XIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "auto"
+
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [menuOpen])
   return (
     <nav className="w-full border-b border-neutral-200 bg-[#FAf8F5]/90 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
@@ -41,17 +48,33 @@ export default function Navbar() {
             </li>
             {
               menuOpen ? 
-              <li>
+              <button className="block lg:hidden" onClick={() => setMenuOpen(false)}>
                 <XIcon className="size-6 sm:size-7 md:size-8 hover:opacity-70 transition" />
-              </li> 
+              </button> 
               :
-              <li>
+              <button className="block lg:hidden" onClick={() => setMenuOpen(true)}>
                 <ListIcon className="size-6 sm:size-7 md:size-8 hover:opacity-70 transition" />
-              </li>
+              </button>
             }
           </ul>
         </div>
       </div>
+      {
+        menuOpen && 
+        <div className="w-full h-screen flex flex-col justify-center items-center ">
+         <ul className="flex flex-col justify-center items-center gap-20">
+            <li className="text-2xl font-medium hover:opacity-70 transition">
+              <Link href={'/'} onClick={() => setMenuOpen(false)} >Home</Link>
+            </li>
+            <li className="text-2xl font-medium hover:opacity-70 transition">
+              <Link href={'/product'} onClick={() => setMenuOpen(false)} >Product</Link>
+            </li>
+            <li className="text-2xl font-medium hover:opacity-70 transition">
+              <Link href={'/blog'} onClick={() => setMenuOpen(false)} >Blog</Link>
+            </li>
+          </ul> 
+        </div>
+      }
     </nav>
   );
 }
