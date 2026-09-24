@@ -27,6 +27,12 @@ const productToShow = limit ? prodDetails.slice(0, limit) : prodDetails
                     <div className="flex flex-col gap-2 items-center mt-5 justify-center">
                       <button className="w-full py-3 text-base sm:text-lg font-medium flex items-center justify-center gap-2 border-2 rounded-md uppercase hover:bg-neutral-100 transition"><ShoppingBagIcon className="size-6" /> Add to Cart</button>
                       <button className="w-full py-3 text-base sm:text-lg font-medium border-2 rounded-md bg-black text-white uppercase hover:bg-neutral-800 transition">Buy It Now</button>
+                      <Link 
+                        href={`/payment?id=${items.id}`}
+                        className="w-full py-3 text-base sm:text-lg font-medium border-2 rounded-md bg-black text-white uppercase hover:bg-neutral-800 transition flex items-center justify-center text-center"
+                      >
+                        Buy It Now
+                      </Link>
                     </div>
                 </div>        
             ))
