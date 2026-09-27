@@ -1,22 +1,25 @@
 'use client'
 
+import { useCart } from "@/app/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Props = {
-    id: string
+  id: string
 }
 
 export default function DetailProduct({id}: Props) {
     const [prodDetail, setProdDetail] = useState({
+        id: 0,
         name: "",
-        price: "",
+        price: 0,
         description: "",
         image: ""
     })
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(true)
+    const {addToCart} = useCart()
     useEffect(() => {
         const getProd = async () => {
             try {
@@ -33,8 +36,8 @@ export default function DetailProduct({id}: Props) {
         getProd()
     }, [id])
 
-    {if (loading) return <p>Loading....</p>}
-    {if (error)return <p>Error Loading...</p>}
+    if (loading) return <p>Loading....</p>
+    if (error)return <p>Error Loading...</p>
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center py-10 sm:py-16 px-4 sm:px-8 lg:px-12">
       <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16">
@@ -43,7 +46,7 @@ export default function DetailProduct({id}: Props) {
           <div className="w-full max-w-xs sm:max-w-md lg:max-w-lg aspect-square relative rounded-3xl overflow-hidden shadow-md border border-neutral-200">
             <Image
               src= {prodDetail.image}
-              alt="Zarb Official La Rose Divine"
+              alt={prodDetail.name}
               fill
               className="object-cover"
               sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 500px"
@@ -69,14 +72,12 @@ export default function DetailProduct({id}: Props) {
 
           {/* Action Buttons */}
           <div className="w-full max-w-md flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <Link href={`/payment?id=${id}`} className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-black hover:bg-neutral-800 text-white rounded-lg border-2 border-black transition-all active:scale-[0.98]">Buy Now</Link>
             <Link 
               href={`/payment?id=${id}`} 
-              className="w-full sm:w-1/2 py-4 px-6 flex items-center justify-center text-center text-base sm:text-lg font-semibold uppercase bg-black hover:bg-neutral-800 text-white rounded-lg border-2 border-black transition-all active:scale-[0.98]"
-            >
+              className="w-full sm:w-1/2 py-4 px-6 flex items-center justify-center text-center text-base sm:text-lg font-semibold uppercase bg-black hover:bg-neutral-800 text-white rounded-lg border-2 border-black transition-all active:scale-[0.98]">
               Buy Now
             </Link>
-            <button className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-transparent hover:bg-neutral-100 text-black rounded-lg border-2 border-black transition-all active:scale-[0.98]">
+            <button onClick={() => addToCart(prodDetail)} className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-transparent hover:bg-neutral-100 text-black rounded-lg border-2 border-black transition-all active:scale-[0.98]">
               Add To Cart
             </button>
           </div>

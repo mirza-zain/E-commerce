@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
+import { CartProvider } from "./context/CartContext";
 
 export const metadata: Metadata = {
   title: "Zarb Official - Home Page",
@@ -14,9 +15,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`h-full antialiased`}>
       <body className="min-h-full flex flex-col font-[batica] bg-[#FAf8F5]">
-        <Navbar />
-        {children}
-        <Footer />
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

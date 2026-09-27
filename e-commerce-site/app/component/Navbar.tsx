@@ -3,8 +3,10 @@
 import { ListIcon, MagnifyingGlassIcon, ShoppingBagIcon, XIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
+  const {cart} = useCart()
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "auto"
@@ -42,8 +44,11 @@ export default function Navbar() {
               </Link>
             </li>
             <li>
-              <Link href={"/"}>
+              <Link href={"/cart"} className="relative flex justify-center items-center">
                 <ShoppingBagIcon className="size-6 sm:size-7 md:size-8 hover:opacity-70 transition" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-black text-white text-[10px] sm:text-xs font-semibold rounded-full min-w-4 h-4 sm:min-w-5 sm:h-5 px-1 flex items-center justify-center pointer-events-none">{cart.length}</span>
+                )}
               </Link>
             </li>
             {
