@@ -17,6 +17,8 @@ type CartItem = Product & {
 type CartContextValue = {
     cart: CartItem[]
     addToCart: (product: Product) => void
+    decreaseQuantity: (id: number) => void
+    removeFromCart: (id: number) => void
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined)
@@ -36,9 +38,21 @@ export function CartProvider({children}: any) {
             ]
         })
     }
+    const decreaseQuantity = (id: number) => {
+        setCart((currentCart) => {
+            return currentCart.map(item => item.id === id ?
+                {...item, quantity: item.quantity -1 } :
+                item
+            )
+            .filter((item) => item.quantity > 0)
+        })
+    }
+    const removeFromCart = (id:number) => {
+        setCart((currentCart) => currentCart.filter(item => item.id !== id))
+    }
   
     return (
-        <CartContext.Provider value={{cart, addToCart}}>
+        <CartContext.Provider value={{cart, addToCart, decreaseQuantity, removeFromCart}}>
             {children}
         </CartContext.Provider>
   )

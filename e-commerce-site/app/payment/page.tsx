@@ -1,16 +1,12 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
-import { prodDetails } from "@/app/testData/productDetails";
+import { useCart } from "../context/CartContext";
 
-type Props = {
-  searchParams: Promise<{
-    id?: string;
-  }>;
-};
-
-export default async function PaymentPage({ searchParams }: Props) {
-  const { id } = await searchParams;
-  const product = prodDetails.find((item) => item.id === Number(id)) || prodDetails[0];
+export default function PaymentPage() {
+  const {cart} = useCart()
+  const subTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0)
 
   return (
     <section className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
@@ -36,7 +32,7 @@ export default async function PaymentPage({ searchParams }: Props) {
                 <label className="block text-sm font-medium text-neutral-700 mb-1">First Name</label>
                 <input 
                   type="text" 
-                  placeholder="Ali" 
+                  placeholder="Mirza" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 />
               </div>
@@ -44,7 +40,7 @@ export default async function PaymentPage({ searchParams }: Props) {
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Last Name</label>
                 <input 
                   type="text" 
-                  placeholder="Khan" 
+                  placeholder="Zain" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 />
               </div>
@@ -54,7 +50,7 @@ export default async function PaymentPage({ searchParams }: Props) {
               <label className="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
               <input 
                 type="email" 
-                placeholder="ali@example.com" 
+                placeholder="zarb@example.com" 
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
               />
             </div>
@@ -81,7 +77,7 @@ export default async function PaymentPage({ searchParams }: Props) {
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>
                 <input 
                   type="tel" 
-                  placeholder="0300 1234567" 
+                  placeholder="03001234567" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 />
               </div>
@@ -124,32 +120,29 @@ export default async function PaymentPage({ searchParams }: Props) {
             Order Summary
           </h2>
 
-          {product ? (
-            <div className="flex items-center gap-4 pb-6 border-b border-neutral-200">
+          {cart.map ((item) => 
+            <div key={item.id} className="flex items-center gap-4 pb-6 border-b border-neutral-200">
               <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-neutral-200 shrink-0">
                 <Image 
-                  src={product.image} 
-                  alt={product.name} 
+                  src={item.image} 
+                  alt={item.name} 
                   fill 
                   className="object-cover" 
                 />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-lg text-neutral-900 truncate">
-                  Zarb Official {product.name}
+                  Zarb Official {item.name}
                 </h3>
-                <p className="text-sm text-neutral-500">Qty: 1</p>
-                <p className="text-base font-medium mt-1">Rs. {product.price}</p>
+                <p className="text-sm text-neutral-500">Qty: {item.quantity}</p>
+                <p className="text-base font-medium mt-1">Rs. {item.price * item.quantity}</p>
               </div>
             </div>
-          ) : (
-            <p className="text-sm text-neutral-500">No item selected</p>
           )}
-
           <div className="space-y-3 py-4 text-sm border-b border-neutral-200">
             <div className="flex justify-between text-neutral-600">
               <span>Subtotal</span>
-              <span>Rs. {product ? product.price : 0}</span>
+              <span>Rs. {subTotal}</span>
             </div>
             <div className="flex justify-between text-neutral-600">
               <span>Delivery Charges</span>
@@ -159,7 +152,7 @@ export default async function PaymentPage({ searchParams }: Props) {
 
           <div className="flex justify-between items-center pt-4 text-lg font-bold text-neutral-900">
             <span>Total</span>
-            <span>Rs. {product ? product.price : 0}</span>
+            <span>Rs. {subTotal}</span>
           </div>
         </div>
       </div>

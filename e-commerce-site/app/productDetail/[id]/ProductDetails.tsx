@@ -2,7 +2,6 @@
 
 import { useCart } from "@/app/context/CartContext";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -70,13 +69,8 @@ export default function DetailProduct({id}: Props) {
             Rs {prodDetail.price}
           </p>
 
-          {/* Action Buttons */}
+          {/* Action Button */}
           <div className="w-full max-w-md flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <Link 
-              href={`/payment?id=${id}`} 
-              className="w-full sm:w-1/2 py-4 px-6 flex items-center justify-center text-center text-base sm:text-lg font-semibold uppercase bg-black hover:bg-neutral-800 text-white rounded-lg border-2 border-black transition-all active:scale-[0.98]">
-              Buy Now
-            </Link>
             <button onClick={() => addToCart(prodDetail)} className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-transparent hover:bg-neutral-100 text-black rounded-lg border-2 border-black transition-all active:scale-[0.98]">
               Add To Cart
             </button>
