@@ -1,4 +1,4 @@
-import Products from "../component/Products";
+import Products from "../(component)/Products";
 
 export default function FeaturedProducts() {
   return (

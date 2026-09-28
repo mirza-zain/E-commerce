@@ -1,7 +1,8 @@
-import Blog from "./screens/Blog";
-import FeaturedItems from "./screens/SpecialItems";
-import Products from "./screens/FeaturedProducts";
+
 import Link from "next/link";
+import FeaturedItems from "./screens/SpecialItems";
+import Blog from "./screens/Blog";
+import FeaturedProducts from "./screens/FeaturedProducts";
 
 export default function Home() {
   return (
@@ -19,7 +20,7 @@ export default function Home() {
       </header>
       <FeaturedItems />
       <Blog />
-      <Products />
+      <FeaturedProducts />
     </>
   );
 }

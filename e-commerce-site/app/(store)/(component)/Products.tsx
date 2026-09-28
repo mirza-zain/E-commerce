@@ -1,9 +1,9 @@
 'use client'
 
 import Link from "next/link";
-import { prodDetails } from "../testData/productDetails";
 import { ShoppingBagIcon } from "@phosphor-icons/react";
 import { useCart } from "../context/CartContext";
+import { prodDetails } from "@/app/testData/productDetails";
 
 type Props = {
   limit? : number
@@ -13,7 +13,7 @@ export default function Products({limit}: Props) {
 const productToShow = limit ? prodDetails.slice(0, limit) : prodDetails
 const { addToCart } = useCart()
   return (
-    <div>
+    <div className="p-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {
             productToShow.map(items => (

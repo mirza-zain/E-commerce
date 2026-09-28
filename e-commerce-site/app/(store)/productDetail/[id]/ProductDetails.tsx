@@ -1,8 +1,8 @@
 'use client'
 
-import { useCart } from "@/app/context/CartContext";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useCart } from "../../context/CartContext";
 
 type Props = {
   id: string
