@@ -9,6 +9,7 @@ export async function POST (request: Request) {
     .values({
         name: body.name,
         description: body.description,
+        category: body.category,
         price: body.price,
         stock: body.stock,
         image: body.image

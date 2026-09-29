@@ -9,7 +9,7 @@ type Props = {
 }
 
 
-export async function GET({params}: Props) {
+export async function GET(_request: Request, {params}: Props) {
     const {id} = await params
     if(Number.isNaN(id)) {
         return Response.json (
@@ -56,6 +56,7 @@ export async function PUT(request: Request, {params}: Props) {
     .set({
         name: body.name,
         description: body.description,
+        category: body.category,
         price: body.price,
         stock: body.stock,
         image: body.image
@@ -76,7 +77,7 @@ export async function PUT(request: Request, {params}: Props) {
     return Response.json(updateProduct)
 }
 
-export async function DELETE ({params}: Props) {
+export async function DELETE (_request: Request, {params}: Props) {
     const {id} = await params
     const prodId = Number(id)
 

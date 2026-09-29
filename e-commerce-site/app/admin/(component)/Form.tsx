@@ -6,6 +6,7 @@ export default function Form() {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    category: "",
     price: 0,
     stock: 0,
     // image: ""
@@ -13,13 +14,14 @@ export default function Form() {
   const [submitData, setSubmittedData] = useState({
     name: "",
     description: "",
+    category: "",
     price: 0,
     stock: 0,
     // image: ""
   })
   const [serverError, setServerError] = useState("")
 
-  function handleData(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleData(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const {name, value} = event.target
     setServerError("")
     setFormData({
@@ -34,6 +36,7 @@ export default function Form() {
 
       if(formData.name === "") return setServerError("Name is required")
       if(formData.description === "") return setServerError("Description is required")
+      if(formData.category === "") return setServerError("Category is required")
       if(formData.price <= 0) return setServerError("Price is required")
       if(formData.stock <= 0) return setServerError("No of Items in Stock is required")
       // if(formData.image === "") newError.image  = "Image is required"
@@ -62,6 +65,12 @@ export default function Form() {
         <input className="border py-2 px-2 text-base rounded-md" type="text" name="name" id="prodName" placeholder="Product Name" value={formData.name} onChange={handleData} />
         <label htmlFor="prodDes">Product Description: </label>
         <input className="border py-2 px-2 text-base rounded-md" type="text" name="description" id="prodDes" placeholder="Product Description" value={formData.description} onChange={handleData} />
+        <label htmlFor="prodCateory">Choose Category: </label>
+        <select id="prodCategory" name="category" value={formData.category} onChange={handleData}>
+          <option value="">Choose Option</option>
+          <option value="mens">Men</option>
+          <option value="women">Women</option>
+        </select>
         <label htmlFor="prodPrice">Product Price: </label>
         <input className="border py-2 px-2 text-base rounded-md" type="number" name="price" id="prodPrice" placeholder="Rs 2000" value={formData.price} onChange={handleData} />
         <label htmlFor="prodStock">No of Items in Stock: </label>
