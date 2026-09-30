@@ -2,14 +2,28 @@
 
 import React, { useState } from "react";
 
-export default function Form() {
+type Products = {
+  id: number,
+  name: string, 
+  description: string,
+  category: string,
+  price: number,
+  stock: number,
+  image: string | null
+}
+
+type FormProps = {
+  product?: Products
+}
+
+export default function Form({product}: FormProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category: "",
-    price: 0,
-    stock: 0,
-    // image: ""
+    name: product?.name ?? "",
+    description: product?.description ?? "",
+    category: product?.category ?? "",
+    price: product?.price ?? 0,
+    stock: product?.stock ?? 0,
+    // image: product.image ?? ""
   })
   const [submitData, setSubmittedData] = useState({
     name: "",
@@ -33,6 +47,8 @@ export default function Form() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault()
+
+      const isEditing = !!product
 
       if(formData.name === "") return setServerError("Name is required")
       if(formData.description === "") return setServerError("Description is required")
@@ -58,6 +74,10 @@ export default function Form() {
     }
   }
 
+  console.log("PRODUCT:", product)
+console.log("CATEGORY:", product?.category)
+console.log("FORM CATEGORY:", formData.category)
+
   return (
     <>
       <form className="py-20 px-20 flex flex-col items-start gap-5" onSubmit={handleSubmit}>
@@ -66,6 +86,7 @@ export default function Form() {
         <label htmlFor="prodDes">Product Description: </label>
         <input className="border py-2 px-2 text-base rounded-md" type="text" name="description" id="prodDes" placeholder="Product Description" value={formData.description} onChange={handleData} />
         <label htmlFor="prodCateory">Choose Category: </label>
+        <p>current category {formData.category}</p>
         <select id="prodCategory" name="category" value={formData.category} onChange={handleData}>
           <option value="">Choose Option</option>
           <option value="mens">Men</option>
