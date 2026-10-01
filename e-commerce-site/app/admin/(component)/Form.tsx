@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from "react";
+import { CheckCircleIcon, WarningCircleIcon } from "@phosphor-icons/react";
 
 type Products = {
   id: number,
@@ -13,99 +14,215 @@ type Products = {
 }
 
 type FormProps = {
-  product?: Products
+  product?: Products,
+  onProductSaved?: (product: Products) => void
 }
 
-export default function Form({product}: FormProps) {
+export default function Form({ product, onProductSaved }: FormProps) {
+  const isEditing = !!product;
+
   const [formData, setFormData] = useState({
     name: product?.name ?? "",
     description: product?.description ?? "",
     category: product?.category ?? "",
     price: product?.price ?? 0,
     stock: product?.stock ?? 0,
-    // image: product.image ?? ""
-  })
-  const [submitData, setSubmittedData] = useState({
-    name: "",
-    description: "",
-    category: "",
-    price: 0,
-    stock: 0,
-    // image: ""
-  })
-  const [serverError, setServerError] = useState("")
+  });
 
-  function handleData(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    const {name, value} = event.target
-    setServerError("")
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  function handleData(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+    const { name, value } = event.target;
+    setServerError("");
+    setSuccessMessage("");
     setFormData({
       ...formData,
-      [name] : name === "price" || name === "stock" ? Number(value) : value
-    })
+      [name]: name === "price" || name === "stock" ? Number(value) : value
+    });
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setServerError("");
+    setSuccessMessage("");
+
+    if (!formData.name.trim()) return setServerError("Product name is required.");
+    if (!formData.description.trim()) return setServerError("Product description is required.");
+    if (!formData.category) return setServerError("Please select a category.");
+    if (formData.price <= 0) return setServerError("Price must be greater than 0.");
+    if (formData.stock < 0) return setServerError("Stock cannot be negative.");
+
     try {
-      event.preventDefault()
+      setIsSubmitting(true);
+      const url = isEditing 
+        ? `/api/productDetail/${product.id}` 
+        : "/api/product";
 
-      const isEditing = !!product
+      const method = isEditing ? "PUT" : "POST";
 
-      if(formData.name === "") return setServerError("Name is required")
-      if(formData.description === "") return setServerError("Description is required")
-      if(formData.category === "") return setServerError("Category is required")
-      if(formData.price <= 0) return setServerError("Price is required")
-      if(formData.stock <= 0) return setServerError("No of Items in Stock is required")
-      // if(formData.image === "") newError.image  = "Image is required"
-
-      const response = await fetch("/api/product", {
-        method: "POST",
-        headers: {"Content-Type" : "application/json"},
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
-      })
-      if(!response.ok) {
-        throw new Error("Product not created")
+      });
+
+      if (!response.ok) {
+        throw new Error(isEditing ? "Failed to update product." : "Failed to create product.");
       }
-      const data = await response.json()
-      
-      setSubmittedData(data)
-    
+
+      const data = await response.json();
+      const saved = Array.isArray(data) ? data[0] : data;
+
+      setSuccessMessage(isEditing ? "Product updated successfully!" : "Product created successfully!");
+
+      if (!isEditing) {
+        // Reset form for next entry
+        setFormData({
+          name: "",
+          description: "",
+          category: "",
+          price: 0,
+          stock: 0,
+        });
+      }
+
+      if (onProductSaved && saved) {
+        onProductSaved(saved);
+      }
     } catch (error) {
-      setServerError((error as Error).message)
+      setServerError((error as Error).message);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
-  console.log("PRODUCT:", product)
-console.log("CATEGORY:", product?.category)
-console.log("FORM CATEGORY:", formData.category)
-
   return (
-    <>
-      <form className="py-20 px-20 flex flex-col items-start gap-5" onSubmit={handleSubmit}>
-        <label htmlFor="prodName">Product Name: </label>
-        <input className="border py-2 px-2 text-base rounded-md" type="text" name="name" id="prodName" placeholder="Product Name" value={formData.name} onChange={handleData} />
-        <label htmlFor="prodDes">Product Description: </label>
-        <input className="border py-2 px-2 text-base rounded-md" type="text" name="description" id="prodDes" placeholder="Product Description" value={formData.description} onChange={handleData} />
-        <label htmlFor="prodCateory">Choose Category: </label>
-        <p>current category {formData.category}</p>
-        <select id="prodCategory" name="category" value={formData.category} onChange={handleData}>
-          <option value="">Choose Option</option>
-          <option value="mens">Men</option>
-          <option value="women">Women</option>
-        </select>
-        <label htmlFor="prodPrice">Product Price: </label>
-        <input className="border py-2 px-2 text-base rounded-md" type="number" name="price" id="prodPrice" placeholder="Rs 2000" value={formData.price} onChange={handleData} />
-        <label htmlFor="prodStock">No of Items in Stock: </label>
-        <input className="border py-2 px-2 text-base rounded-md" type="number" name="stock" id="prodStock" placeholder="10" value={formData.stock} onChange={handleData} />
-        {/* <label htmlFor="prodImage">Choose Image: </label>
-        <input className="border py-2 px-2 text-base rounded-md" type="file" accept="image/*" name="image" id="prodImage" value={formData.image} onChange={handleData} />
-        <div id="preview-container">
-          <img id="image-preview" src="" alt="Image Preview" />
-        </div> */}
-        <button className="" type="submit">Submit</button>
+    <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm p-6 sm:p-8">
+      {serverError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-3">
+          <WarningCircleIcon className="size-5 shrink-0 text-red-500" />
+          <span>{serverError}</span>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl flex items-center gap-3">
+          <CheckCircleIcon className="size-5 shrink-0 text-emerald-600" />
+          <span>{successMessage}</span>
+        </div>
+      )}
+
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Product Name */}
+          <div>
+            <label htmlFor="prodName" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+              Product Name
+            </label>
+            <input 
+              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition" 
+              type="text" 
+              name="name" 
+              id="prodName" 
+              placeholder="e.g. La Rose Divine" 
+              value={formData.name} 
+              onChange={handleData} 
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label htmlFor="prodCategory" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+              Category
+            </label>
+            <select 
+              id="prodCategory" 
+              name="category" 
+              value={formData.category} 
+              onChange={handleData}
+              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition"
+            >
+              <option value="">Select Category</option>
+              <option value="mens">Men</option>
+              <option value="women">Women</option>
+              <option value="unisex">Unisex</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Price */}
+          <div>
+            <label htmlFor="prodPrice" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+              Price (PKR)
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-400 font-medium">
+                Rs.
+              </span>
+              <input 
+                className="w-full pl-12 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition" 
+                type="number" 
+                name="price" 
+                id="prodPrice" 
+                placeholder="2500" 
+                value={formData.price === 0 ? "" : formData.price} 
+                onChange={handleData} 
+              />
+            </div>
+          </div>
+
+          {/* Stock */}
+          <div>
+            <label htmlFor="prodStock" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+              Stock Quantity
+            </label>
+            <input 
+              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition" 
+              type="number" 
+              name="stock" 
+              id="prodStock" 
+              placeholder="10" 
+              value={formData.stock === 0 ? "" : formData.stock} 
+              onChange={handleData} 
+            />
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label htmlFor="prodDes" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+            Description
+          </label>
+          <textarea 
+            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition resize-none" 
+            name="description" 
+            id="prodDes" 
+            rows={3}
+            placeholder="Describe scent notes, projection, and occasion..." 
+            value={formData.description} 
+            onChange={handleData} 
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end pt-2">
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="px-6 py-3 bg-black hover:bg-neutral-800 disabled:opacity-50 text-white text-sm font-semibold uppercase tracking-wider rounded-xl transition active:scale-[0.99] flex items-center gap-2 shadow-sm"
+          >
+            {isSubmitting ? (
+              <span>Saving...</span>
+            ) : (
+              <span>{isEditing ? "Update Product" : "Create Product"}</span>
+            )}
+          </button>
+        </div>
       </form>
-      {
-        serverError && <p>{serverError}</p>
-      }
-    </>
-  )
+    </div>
+  );
 }
+
