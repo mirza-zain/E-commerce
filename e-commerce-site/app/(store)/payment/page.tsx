@@ -3,8 +3,46 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
+import React, { useState } from "react";
 
 export default function PaymentPage() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNum: "",
+    address: "",
+    city: "",
+  })
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    const {name, value} = event.target
+    setFormData({
+      ...formData,
+      [name] : value
+    })
+  }
+
+  const handleSubmit = async (event : React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const response = await fetch("/api/orders", {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        ...formData,
+        totalAmount: subTotal,
+        items: cart 
+      })
+    })  
+
+    if(!response.ok) throw new Error("Error Processing Order")
+
+    const data = await response.json()
+
+  }
+
   const {cart} = useCart()
   const subTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0)
 
@@ -26,22 +64,28 @@ export default function PaymentPage() {
             Shipping Information
           </h2>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">First Name</label>
                 <input 
                   type="text" 
+                  name="firstName"
                   placeholder="Mirza" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                  value={formData.firstName}
+                  onChange={handleChange}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Last Name</label>
                 <input 
                   type="text" 
+                  name="lastName"
                   placeholder="Zain" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                  value={formData.lastName}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -50,17 +94,23 @@ export default function PaymentPage() {
               <label className="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
               <input 
                 type="email" 
+                name="email"
                 placeholder="zarb@example.com" 
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-1">Street Address</label>
               <input 
-                type="text" 
+                type="text"
+                name="address" 
                 placeholder="House #, Street name" 
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                value={formData.address}
+                onChange={handleChange}
               />
             </div>
 
@@ -68,17 +118,23 @@ export default function PaymentPage() {
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">City</label>
                 <input 
-                  type="text" 
+                  type="text"
+                  name="city" 
                   placeholder="Karachi" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                  value={formData.city}
+                  onChange={handleChange}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>
                 <input 
-                  type="tel" 
+                  type="tel"
+                  name="phoneNum" 
                   placeholder="03001234567" 
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                  value={formData.phoneNum}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -95,18 +151,18 @@ export default function PaymentPage() {
                     <p className="text-xs text-neutral-500">Pay cash upon parcel delivery</p>
                   </div>
                 </label>
-                <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
+                {/* <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
                   <input type="radio" name="payment" className="accent-black" />
                   <div>
                     <p className="font-medium text-neutral-900">Credit / Debit Card</p>
                     <p className="text-xs text-neutral-500">Pay securely via Visa / MasterCard</p>
                   </div>
-                </label>
+                </label> */}
               </div>
             </div>
 
             <button 
-              type="button" 
+              type="submit" 
               className="w-full mt-6 py-4 bg-black text-white text-lg font-semibold uppercase rounded-lg hover:bg-neutral-800 transition active:scale-[0.99]"
             >
               Confirm Order

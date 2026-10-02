@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { CheckCircleIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import {CldUploadWidget} from "next-cloudinary"
+import Image from "next/image";
 
 type Products = {
   id: number,
@@ -27,6 +29,7 @@ export default function Form({ product, onProductSaved }: FormProps) {
     category: product?.category ?? "",
     price: product?.price ?? 0,
     stock: product?.stock ?? 0,
+    image: product?.image ?? ""
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,6 +88,7 @@ export default function Form({ product, onProductSaved }: FormProps) {
           category: "",
           price: 0,
           stock: 0,
+          image: ""
         });
       }
 
@@ -205,6 +209,54 @@ export default function Form({ product, onProductSaved }: FormProps) {
             value={formData.description} 
             onChange={handleData} 
           />
+        </div>
+        
+        {/* Product Image */}
+        <div>
+          <label htmlFor="image" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+            Product Image
+          </label>
+
+          <CldUploadWidget
+            uploadPreset="zarb_official"
+            onSuccess={(result) => {
+              if(typeof result.info !== "string" && result.info) {
+                const imageUrl = result.info.secure_url
+
+                setFormData((currentData) => ({
+                  ...currentData,
+                  image: imageUrl
+                }))
+              }
+            }}
+          >
+            {({ open }) => {
+              return (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className="px-4 py-3 border border-neutral-200 rounded-xl"
+                  >
+                    Upload Image
+                  </button>
+                  {
+                    formData.image && (
+                      <div className="mt-4">
+                        <Image 
+                          src={formData.image}
+                          alt={formData.name}
+                          width={300}
+                          height={300}
+                          className="rounded-xl object-cover"
+                        />
+                      </div>
+                    )
+                  }
+                </>
+              )
+            }}
+          </CldUploadWidget>
         </div>
 
         {/* Submit Button */}
