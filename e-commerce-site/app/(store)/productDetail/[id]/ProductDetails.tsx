@@ -8,24 +8,30 @@ type Props = {
   id: string
 }
 
+type Product =  {
+  id: number
+  name: string,
+  image: string | null,
+  description: string,
+  category: string,
+  price: number,
+  stock: number
+}
+
 export default function DetailProduct({id}: Props) {
-    const [prodDetail, setProdDetail] = useState({
-        id: 0,
-        name: "",
-        price: 0,
-        description: "",
-        image: ""
-    })
+    const [prodDetail, setProdDetail] = useState<Product | null>(null)
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(true)
     const {addToCart} = useCart()
+
     useEffect(() => {
         const getProd = async () => {
             try {
                 const response = await fetch(`/api/productDetail/${id}`)
                 if(!response.ok) throw new Error("Product Not Found")
                 const items = await response.json()
-                setProdDetail(items)
+                setProdDetail(items[0])
+
             } catch(error) {
                 setError((error as Error).message)
             } finally {
@@ -33,10 +39,13 @@ export default function DetailProduct({id}: Props) {
             }
         }
         getProd()
+        
     }, [id])
 
     if (loading) return <p>Loading....</p>
-    if (error)return <p>Error Loading...</p>
+    if (error) return <p>Error Loading...</p>
+    if (!prodDetail) return <p>Product Not Found</p>
+ 
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center py-10 sm:py-16 px-4 sm:px-8 lg:px-12">
       <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16">
@@ -44,7 +53,7 @@ export default function DetailProduct({id}: Props) {
         <div className="w-full lg:w-1/2 flex justify-center items-center">
           <div className="w-full max-w-xs sm:max-w-md lg:max-w-lg aspect-square relative rounded-3xl overflow-hidden shadow-md border border-neutral-200">
             <Image
-              src= {prodDetail.image}
+              src= {prodDetail.image!}
               alt={prodDetail.name}
               fill
               className="object-cover"
@@ -71,8 +80,12 @@ export default function DetailProduct({id}: Props) {
 
           {/* Action Button */}
           <div className="w-full max-w-md flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <button onClick={() => addToCart(prodDetail)} className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-transparent hover:bg-neutral-100 text-black rounded-lg border-2 border-black transition-all active:scale-[0.98]">
-              Add To Cart
+            <button 
+              disabled={prodDetail.stock <= 0}
+              onClick={() => addToCart(prodDetail)} 
+              className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-transparent hover:bg-neutral-100 text-black rounded-lg border-2 border-black transition-all active:scale-[0.98]"  
+            >
+              {prodDetail.stock > 0 ? "Add to Cart" : "Out of Stock"}
             </button>
           </div>
         </div>

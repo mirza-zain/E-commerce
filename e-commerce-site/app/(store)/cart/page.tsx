@@ -68,7 +68,7 @@ export default function CartPage() {
               {/* Product Thumbnail */}
               <div className="relative w-28 h-28 sm:w-24 sm:h-24 aspect-square rounded-xl overflow-hidden border border-neutral-200 shrink-0">
                 <Image
-                  src={item.image}
+                  src={item.image!}
                   alt={item.name}
                   fill
                   className="object-cover"

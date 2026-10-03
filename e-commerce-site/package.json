@@ -9,9 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
+    "@neondatabase/serverless": "^1.2.0",
     "@phosphor-icons/react": "^2.1.10",
     "approve": "^0.0.12",
+    "bufferutil": "^4.1.0",
     "dotenv": "^18.0.4",
     "drizzle-kit": "^0.31.11",
     "drizzle-orm": "^0.45.3",
@@ -19,13 +20,15 @@
     "next-cloudinary": "^6.19.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "scripts": "^0.1.0"
+    "scripts": "^0.1.0",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.18.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",
@@ -35,6 +38,7 @@
     "unrs-resolver@1.12.2": true,
     "esbuild@0.18.20": true,
     "esbuild@0.25.12": true,
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "bufferutil@4.1.0": true
   }
 }

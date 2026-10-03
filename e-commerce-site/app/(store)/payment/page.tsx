@@ -40,10 +40,12 @@ export default function PaymentPage() {
     if(!response.ok) throw new Error("Error Processing Order")
 
     const data = await response.json()
+    
+    clearCart()
 
   }
 
-  const {cart} = useCart()
+  const {cart, clearCart} = useCart()
   const subTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0)
 
   return (
@@ -75,6 +77,7 @@ export default function PaymentPage() {
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                   value={formData.firstName}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div>
@@ -86,6 +89,7 @@ export default function PaymentPage() {
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                   value={formData.lastName}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -99,6 +103,7 @@ export default function PaymentPage() {
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 value={formData.email}
                 onChange={handleChange}
+                required
               />
             </div>
 
@@ -111,6 +116,7 @@ export default function PaymentPage() {
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 value={formData.address}
                 onChange={handleChange}
+                required
               />
             </div>
 
@@ -124,6 +130,7 @@ export default function PaymentPage() {
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                   value={formData.city}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div>
@@ -135,6 +142,7 @@ export default function PaymentPage() {
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                   value={formData.phoneNum}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -180,7 +188,7 @@ export default function PaymentPage() {
             <div key={item.id} className="flex items-center gap-4 pb-6 border-b border-neutral-200">
               <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-neutral-200 shrink-0">
                 <Image 
-                  src={item.image} 
+                  src={item.image!} 
                   alt={item.name} 
                   fill 
                   className="object-cover" 

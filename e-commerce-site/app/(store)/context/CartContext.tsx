@@ -7,7 +7,9 @@ type Product = {
     name: string,
     description: string, 
     price: number,
-    image: string
+    image: string | null,
+    stock: number,
+    category: string
 }
 
 type CartItem = Product & {
@@ -19,6 +21,7 @@ type CartContextValue = {
     addToCart: (product: Product) => void
     decreaseQuantity: (id: number) => void
     removeFromCart: (id: number) => void
+    clearCart: () => void
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined)
@@ -28,10 +31,25 @@ export function CartProvider({children}: any) {
 
     const addToCart = (product: Product) => {
         setCart((currentCart) => {
-            const existingProduct = currentCart.find((item) => item.id === product.id)
-            if(existingProduct) {
-                return currentCart.map(item => item.id === product.id ? {...item, quantity: item.quantity + 1} : item)
+            const existingProduct = currentCart.find((item) => 
+                item.id === product.id)
+            
+            if(product.stock <= 0) {
+                return currentCart
             }
+            
+            if(existingProduct) {
+                
+                if(existingProduct.quantity >= product.stock) {
+                    return currentCart
+                }
+
+                return currentCart.map(item => 
+                    item.id === product.id ? 
+                    {...item, quantity: item.quantity + 1} 
+                    : item)
+            }
+
             return [
                 ...currentCart, 
                 {...product, quantity: 1}
@@ -51,8 +69,12 @@ export function CartProvider({children}: any) {
         setCart((currentCart) => currentCart.filter(item => item.id !== id))
     }
   
+    const clearCart = () => {
+        setCart([])
+    }
+
     return (
-        <CartContext.Provider value={{cart, addToCart, decreaseQuantity, removeFromCart}}>
+        <CartContext.Provider value={{cart, addToCart, decreaseQuantity, removeFromCart, clearCart}}>
             {children}
         </CartContext.Provider>
   )
