@@ -109,8 +109,48 @@ export async function GET() {
         const result = await db
         .select()
         .from(orders)
+        .leftJoin(
+            orderItems,
+            eq(orders.id, orderItems.orderId)
+        )
+        .leftJoin(
+            products,
+            eq(orderItems.productId, products.id)
+        )
+
+        const formattedOrders = result.reduce((acc, row) => {
+            const currentOrder = row.orders
+            const item = row.order_items
+            const product = row.products
+
+            let exisitingOrder = acc.find(
+                (order : any) => order.id === currentOrder.id
+            )
+
+            if(!exisitingOrder) {
+                exisitingOrder = {
+                    ...currentOrder,
+                    items: []
+                }
+
+                acc.push(exisitingOrder)
+            }
+
+            if(item && product) {
+                exisitingOrder.items.push({
+                    productId: product.id,
+                    productName: product.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })
+            }
+
+            return acc
+        }, [] as any) 
+
+
+        return Response.json(formattedOrders)
         
-        return Response.json(result)
     } catch (error) {
         console.error("Get Orders Error: ", error)
         console.error("Error Message: ", (error as Error).message)

@@ -1,20 +1,13 @@
-import {notFound} from "next/navigation"
-import ProductDetails from "./ProductDetails"
-import {prodDetails} from "@/app/testData/productDetails"
+import ProductDetails from "./ProductDetails";
 
 type Props = {
   params: Promise<{
-    id: string
-  }>
-}
+    id: string;
+  }>;
+};
 
-export default async function UserPage({params}: Props){
-  const {id} = await params
-  const items = prodDetails.find((prod) => prod.id === Number(id))
+export default async function UserPage({ params }: Props) {
+  const { id } = await params;
 
-  if(!items) notFound()
-  
-  return (
-    <ProductDetails id={id} />
-  )
+  return <ProductDetails id={id} />;
 }

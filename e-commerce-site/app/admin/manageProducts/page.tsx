@@ -31,7 +31,7 @@ export default function ManageProductsPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const response = await fetch(`/api/productDetail/${id}`, {
+      const response = await fetch(`https://zarbofficial.vercel.app/api/productDetail/${id}`, {
         method: "DELETE"
       });
 
