@@ -24,7 +24,7 @@ export default async function OrderDetails({ params }: Props) {
 
         if (Number.isNaN(orderId)) notFound()
 
-        const response = await fetch(`http://localhost:3000/api/orders/${orderId}`)
+        const response = await fetch(`http://zarbofficial.vercel.app/api/orders/${orderId}`)
 
         if (!response.ok) throw new Error("Error Finding Order")
 
