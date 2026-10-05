@@ -24,6 +24,7 @@ export default function Products({limit}: Props) {
 const [products, setProducts] = useState<Product[]>([])
 const [error, setError] = useState("")
 const [loading, setLoading] = useState(true)
+const [selectedCategory, setSelectedCategory] = useState("all")
 
 useEffect(() => {
   async function getProducts() {
@@ -46,7 +47,10 @@ useEffect(() => {
 
 }, [])
 
-const productToShow = limit ? products.slice(0, limit) : products
+const filteredProducts = selectedCategory === "all"
+  ? products
+  : products.filter((product) => product.category === selectedCategory)
+const productToShow = limit ? filteredProducts.slice(0, limit) : filteredProducts
 const { addToCart } = useCart()
 
 if(error) return <p>There is Error Loading Data</p>
@@ -54,12 +58,34 @@ if(loading) return <p>Loading.....</p>
 
   return (
     <div className="p-5">
+        <div className="mb-10 flex flex-wrap justify-center gap-2" role="group" aria-label="Filter products by category">
+          {[
+            { value: "all", label: "All" },
+            { value: "mens", label: "Men" },
+            { value: "women", label: "Women" },
+            { value: "unisex", label: "Unisex" },
+          ].map((category) => (
+            <button
+              key={category.value}
+              type="button"
+              onClick={() => setSelectedCategory(category.value)}
+              className={`rounded-full border px-5 py-2.5 text-sm font-medium transition sm:px-6 ${
+                selectedCategory === category.value
+                  ? "border-black bg-black text-white"
+                  : "border-neutral-300 bg-transparent text-neutral-600 hover:border-black hover:text-black"
+              }`}
+              aria-pressed={selectedCategory === category.value}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {
             productToShow.map(items => (
                 <div className="w-full flex flex-col" key={items.id}>
                     <Link href={`/productDetail/${items.id}`}>
-                      <img src={items.image} className="w-full aspect-[4/5] object-cover rounded-2xl shadow-sm shadow-black" alt="product 1" />
+                      <img src={items.image} className="w-full aspect-4/5 object-cover rounded-2xl shadow-sm shadow-black" alt="product 1" />
                       <p className="text-base text-neutral-500 mt-3">Zarb Store ©</p>
                       <div className="flex flex-col justify-center items-center gap-2 mt-1">
                           <h3 className="text-xl sm:text-2xl font-medium text-center">Zarb Offical {items.name} Perfume</h3>

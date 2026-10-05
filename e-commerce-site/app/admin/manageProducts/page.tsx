@@ -69,7 +69,7 @@ export default function ManageProductsPage() {
   );
 
   return (
-    <div className="p-6 sm:p-10 max-w-7xl mx-auto space-y-10">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:space-y-10 sm:px-10 sm:py-10">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-neutral-200">
         <div>
@@ -151,7 +151,7 @@ export default function ManageProductsPage() {
         ) : (
           <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="min-w-[46rem] w-full border-collapse text-left">
                 <thead>
                   <tr className="bg-neutral-50/80 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
                     <th className="py-3.5 px-6">ID</th>

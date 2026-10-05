@@ -14,16 +14,16 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="w-64 min-h-screen py-8 px-5 flex flex-col bg-white border-r border-neutral-200 shrink-0">
-      <div className="px-3 pb-6 border-b border-neutral-100">
+    <nav className="flex w-full shrink-0 flex-col border-b border-neutral-200 bg-white px-4 py-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r md:px-5 md:py-8">
+      <div className="border-b border-neutral-100 px-1 pb-4 md:px-3 md:pb-6">
         <h1 className="text-2xl font-bold font-[Gebuk] tracking-tight">
           Zarb Admin
         </h1>
         <p className="text-xs text-neutral-400 mt-0.5">Store Operations Console</p>
       </div>
 
-      <div className="mt-8">
-        <ul className="flex flex-col gap-1.5">
+      <div className="mt-4 md:mt-8">
+        <ul className="flex gap-1.5 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0">
           {links.map((item) => {
             const Icon = item.icon;
             const isActive = item.exact 
@@ -34,7 +34,7 @@ export default function Navbar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition ${
+                  className={`flex shrink-0 items-center gap-3 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
                     isActive
                       ? "bg-black text-white shadow-sm"
                       : "text-neutral-600 hover:text-black hover:bg-neutral-100"
@@ -49,7 +49,7 @@ export default function Navbar() {
         </ul>
       </div>
 
-      <div className="mt-auto pt-6 border-t border-neutral-100">
+      <div className="mt-4 border-t border-neutral-100 pt-4 md:mt-auto md:pt-6">
         <Link
           className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-neutral-500 hover:text-black hover:bg-neutral-100 rounded-xl transition"
           href="/"

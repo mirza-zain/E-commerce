@@ -32,7 +32,7 @@ export default function Navbar() {
               <Link href={'/product'}>Product</Link>
             </li>
             <li className="text-lg font-medium hover:opacity-70 transition">
-              <Link href={'/'}>Blog</Link>
+              <Link href={'/'}>Contact</Link>
             </li>
           </ul>
         </div>

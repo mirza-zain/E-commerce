@@ -36,7 +36,7 @@ export default async function OrderDetails({ params }: Props) {
     if (!data) notFound()
 
     return (
-        <div className="min-h-screen px-4 py-10 ">
+        <div className="min-h-screen px-4 py-6 sm:py-10">
             <div className="mx-auto max-w-5xl space-y-6">
                 <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40 md:p-8">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

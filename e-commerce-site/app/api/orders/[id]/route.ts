@@ -65,3 +65,52 @@ export async function GET(request: Request, {params}: Props) {
 
     return Response.json(formattedOrder)
 }
+
+export async function PUT(request: Request, {params}: Props) {
+    const {id} = await params
+    const orderId = Number(id)
+
+    if(Number.isNaN(orderId)) throw new Error("Error Getting Order ID")
+
+    const body = await request.json()
+
+    const allowdStatus = [
+        "pending",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled"
+    ]
+
+    if(!allowdStatus.includes(body.status)) {
+        return Response.json(
+            {
+                error: "Invalid order status"
+            },
+            {
+                status: 400
+            }
+        )
+    }
+
+    const changeStatus = await db 
+        .update(orders)
+        .set({
+            status: body.status
+        })
+        .where(eq(orders.id, orderId))
+        .returning()
+
+    if(changeStatus.length === 0) {
+        return Response.json(
+            {
+                error: "Order not found"
+            },
+            {
+                status: 404
+            }
+        )
+    }
+
+    return Response.json(changeStatus[0])
+}

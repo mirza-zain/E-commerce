@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({children} : {children: React.ReactNode}) {
     return (
-        <div className="flex min-h-screen">  
+        <div className="flex min-h-screen flex-col md:flex-row">  
             <Navbar />
             <div className="flex-1">
                 {children}

@@ -38,7 +38,7 @@ export default function ManageOrders() {
   }, [])
 
   if (loading) return (
-    <div className="min-h-screen px-4 py-10">
+    <div className="min-h-screen px-4 py-6 sm:px-6 sm:py-10">
       <div className="mx-auto max-w-6xl rounded-2xl border p-8 shadow-2xl shadow-slate-950/40">
         <div className="animate-pulse space-y-4">
           <div className="h-7 w-48 rounded bg-slate-700" />
@@ -66,7 +66,7 @@ export default function ManageOrders() {
             <p className="text-sm font-medium uppercase tracking-[0.28em]">Orders</p>
             <h1 className="mt-2 text-3xl font-bold md:text-4xl">Manage Orders</h1>
           </div>
-          <div className="rounded-full border border-cyan-500/30 bg-cyan-500 px-4 py-2 text-sm">
+          <div className="w-fit rounded-full border border-cyan-500/30 bg-cyan-500 px-4 py-2 text-sm">
             {orders.length} total orders
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function ManageOrders() {
 
         <div className="overflow-hidden rounded-2xl border shadow-2xl shadow-slate-950/40">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-800 text-left">
+            <table className="min-w-[48rem] divide-y divide-slate-800 text-left">
               <thead className="bg-slate-900/90">
                 <tr>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Orders</th>
