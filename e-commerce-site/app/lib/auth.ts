@@ -9,6 +9,11 @@ export const auth = betterAuth({
         schema,
     }),
 
+    trustedOrigins: [
+        "http://localhost:3000",
+        "https://zarbofficial.vercel.app"
+    ]
+
     user: {
         additionalFields: {
             role: {
