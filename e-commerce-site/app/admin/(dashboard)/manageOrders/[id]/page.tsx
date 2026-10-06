@@ -1,6 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Order } from "@/app/types/order";
 import StatusControl from "./StatusControl";
+import { db } from "@/app/lib/db";
+import { orders, orderItems, products } from "@/app/db/schema";
+import { eq } from "drizzle-orm";
+import { auth } from "@/app/lib/auth";
+import { headers } from "next/headers";
 
 type Props = {
     params: Promise<{
@@ -9,33 +14,64 @@ type Props = {
 }
 
 const statusClasses: Record<string, string> = {
-    Pending: "bg-amber-500/15 text-amber-300 ring-1 ring-inset ring-amber-500/30",
-    Processing: "bg-sky-500/15 text-sky-300 ring-1 ring-inset ring-sky-500/30",
-    Shipped: "bg-violet-500/15 text-violet-300 ring-1 ring-inset ring-violet-500/30",
-    Delivered: "bg-emerald-500/15 text-emerald-300 ring-1 ring-inset ring-emerald-500/30",
-    Cancelled: "bg-rose-500/15 text-rose-300 ring-1 ring-inset ring-rose-500/30"
+    pending: "bg-amber-500/15 text-amber-300 ring-1 ring-inset ring-amber-500/30",
+    processing: "bg-sky-500/15 text-sky-300 ring-1 ring-inset ring-sky-500/30",
+    shipped: "bg-violet-500/15 text-violet-300 ring-1 ring-inset ring-violet-500/30",
+    delivered: "bg-emerald-500/15 text-emerald-300 ring-1 ring-inset ring-emerald-500/30",
+    cancelled: "bg-rose-500/15 text-rose-300 ring-1 ring-inset ring-rose-500/30"
 };
 
 export default async function OrderDetails({ params }: Props) {
-    let data: Order | null = null
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    try {
-        const { id } = await params
-        const orderId = Number(id)
+    if (!session) {
+        redirect("/admin/login")
+    }
 
-        if (Number.isNaN(orderId)) notFound()
+    if (session.user.role !== "admin") {
+        redirect("/")
+    }
 
-        const response = await fetch(`https://zarbofficial.vercel.app/api/orders/${orderId}`)
+    const { id } = await params
+    const orderId = Number(id)
 
-        if (!response.ok) throw new Error("Error Finding Order")
-
-        data = await response.json()
-    } catch {
+    if (Number.isNaN(orderId)) {
         notFound()
     }
 
-    if (!data) notFound()
+    const getOrder = await db
+        .select()
+        .from(orders)
+        .leftJoin(
+            orderItems,
+            eq(orders.id, orderItems.orderId)
+        )
+        .leftJoin(
+            products,
+            eq(orderItems.productId, products.id)
+        )
+        .where(eq(orders.id, orderId))
 
+    if (getOrder.length === 0) {
+        notFound()
+    }
+
+    const firstRow = getOrder[0]
+
+    const data: Order = {
+        ...firstRow.orders,
+        createdAt: firstRow.orders.createdAt.toISOString(),
+        items: getOrder
+            .filter((row) => row.order_items && row.products)
+            .map((row) => ({
+                productId: row.products!.id,
+                productName: row.products!.name,
+                quantity: row.order_items!.quantity,
+                price: row.order_items!.price
+            }))
+    }
     return (
         <div className="min-h-screen px-4 py-6 sm:py-10">
             <div className="mx-auto max-w-5xl space-y-6">
