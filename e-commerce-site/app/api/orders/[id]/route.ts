@@ -1,6 +1,8 @@
 import {db} from "@/app/lib/db"
 import {orders, products, orderItems} from "@/app/db/schema"
 import { eq } from "drizzle-orm";
+import { auth } from "@/app/lib/auth";
+import { headers } from "next/headers";
 
 
 type Props = {
@@ -10,6 +12,20 @@ type Props = {
 }
 
 export async function GET(request: Request, {params}: Props) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!session) return Response.json(
+        {error: "Unauthorized"},
+        {status: 401}
+    )
+
+    if(session.user.role !== "admin") return Response.json(
+        {error: "Forbidden"},
+        {status: 403}
+    )
+    
     const {id} = await params
     const orderID = Number(id)
     
@@ -67,6 +83,19 @@ export async function GET(request: Request, {params}: Props) {
 }
 
 export async function PUT(request: Request, {params}: Props) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!session) return Response.json(
+        {error: "Unauthorized"},
+        {status: 401}
+    )
+
+    if(session.user.role !== "admin") return Response.json(
+        {error: "Forbidden"},
+        {status: 403}
+    )
     const {id} = await params
     const orderId = Number(id)
 

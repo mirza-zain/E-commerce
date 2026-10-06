@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import React, { useState } from "react";
 
 export default function PaymentPage() {
+  const [trackingId, setTrackingId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -41,8 +42,31 @@ export default function PaymentPage() {
 
     const data = await response.json()
     
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNum: "",
+      address: "",
+      city: ""
+    })
+    setTrackingId(data.trackingId)
     clearCart()
 
+  }
+
+  if(trackingId) {
+    return (
+      <section className="w-full min-h-screen flex items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">Order Confirmed!</h1>
+          <p className="mt-4 text-neutral-600">Thank you for your order.</p>
+          <p className="mt-6 text-sm text-neutral-500">Your Tracking ID</p>
+          <p className="mt-2 text-2xl font-bold tracking-wider">{trackingId}</p>
+          <Link href={"/track"} className="inline-block mt-6 px-6 py-3 bg-black text-white rounded-lg">Track Your Order</Link>
+        </div>
+      </section>
+    )
   }
 
   const {cart, clearCart} = useCart()
@@ -171,7 +195,8 @@ export default function PaymentPage() {
 
             <button 
               type="submit" 
-              className="w-full mt-6 py-4 bg-black text-white text-lg font-semibold uppercase rounded-lg hover:bg-neutral-800 transition active:scale-[0.99]"
+              disabled={cart.length === 0}
+              className="w-full mt-6 py-4 bg-black text-white text-lg font-semibold uppercase rounded-lg hover:bg-neutral-800 transition active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Confirm Order
             </button>

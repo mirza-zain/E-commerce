@@ -7,6 +7,7 @@ export type OrderItem = {
 
 export type Order = {
     id: number,
+    trackingId: string,
     firstName: string,
     lastName: string,
     email: string,

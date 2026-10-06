@@ -1,6 +1,8 @@
 import { products } from "@/app/db/schema";
+import { auth } from "@/app/lib/auth";
 import { db } from "@/app/lib/db";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 
 type Props = {
     params: Promise<{
@@ -38,6 +40,19 @@ export async function GET(_request: Request, {params}: Props) {
 }
 
 export async function PUT(request: Request, {params}: Props) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!session) return Response.json(
+        {error: "Unauthorized"},
+        {status: 401}
+    )
+
+    if(session.user.role !== "admin") return Response.json(
+        {error: "Forbidden"},
+        {status: 403}
+    )
     const {id} = await params
     const prodId = Number(id)
     const body = await request.json()
@@ -78,6 +93,19 @@ export async function PUT(request: Request, {params}: Props) {
 }
 
 export async function DELETE (_request: Request, {params}: Props) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!session) return Response.json(
+        {error: "Unauthorized"},
+        {status: 401}
+    )
+
+    if(session.user.role !== "admin") return Response.json(
+        {error: "Forbidden"},
+        {status: 403}
+    )
     const {id} = await params
     const prodId = Number(id)
 

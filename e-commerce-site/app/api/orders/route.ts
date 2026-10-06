@@ -1,10 +1,76 @@
 import { db } from "@/app/lib/db";
 import { orders, orderItems, products } from "@/app/db/schema";
 import { and, eq, gte, sql } from "drizzle-orm";
+import crypto from "node:crypto"
+import { auth } from "@/app/lib/auth";
+import { headers } from "next/headers";
 
 export async function POST(request: Request) {
-    const body = await request.json()
     try {
+        const body = await request.json()
+
+        if (!Array.isArray(body.items) || body.items.length === 0) {
+            return Response.json(
+                { error: "Cart is empty" },
+                { status: 400 }
+            )
+        }
+    
+        const productIds = body.items.map((item: { id: number }) => item.id)
+    
+        const uniqueProductIds = new Set(productIds)
+    
+        if (uniqueProductIds.size !== productIds.length) {
+            return Response.json(
+                {error: "Duplicate products in order"},
+                {status: 400}
+            )
+        }
+        const requiredFields = [
+            "firstName",
+            "lastName",
+            "email",
+            "phoneNum",
+            "address",
+            "city"
+        ] as const
+    
+        for (const field of requiredFields) {
+            if (
+                typeof body[field] !== "string" ||
+                body[field].trim() === ""
+            ) {
+                return Response.json(
+                    { error: `${field} is required` },
+                    { status: 400 }
+                )
+            }
+        }
+    
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+            return Response.json(
+                { error: "Invalid email address" },
+                { status: 400 }
+            )
+        }
+        
+        const fieldMaxLengths = {
+            firstName: 100,
+            lastName: 100,
+            email: 254,
+            phoneNum: 30,
+            address: 500,
+            city: 100
+        } as const
+    
+        for (const field of requiredFields) {
+            if (body[field].length > fieldMaxLengths[field]) {
+                return Response.json(
+                    { error: `${field} is too long` },
+                    { status: 400 }
+                )
+            }
+        }
 
         const result = await db.transaction(async (tx) => {
     
@@ -14,6 +80,21 @@ export async function POST(request: Request) {
             // Check stock for every product 
     
             for (const item of body.items) {
+                if (
+                    typeof item.id !== "number" ||
+                    !Number.isInteger(item.id) ||
+                    item.id <= 0
+                ) {
+                    throw new Error("Invalid product ID")
+                }     
+                if (
+                    typeof item.quantity !== "number" ||
+                    !Number.isInteger(item.quantity) ||
+                    item.quantity <= 0
+                ) {
+                    throw new Error("Invalid quantity")
+                }
+
                 const prodResult = await tx
                 .select()
                 .from(products)
@@ -36,12 +117,18 @@ export async function POST(request: Request) {
                 })
             }
     
-            
+            function generateTrackingId() {
+                return `ZRB-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+            }
+
+            const trackingId = generateTrackingId()
+
             // Create Order
             
             const newOrder = await tx
             .insert(orders)
             .values({
+                trackingId,
                 firstName: body.firstName,
                 lastName: body.lastName,
                 email: body.email,
@@ -91,13 +178,14 @@ export async function POST(request: Request) {
     
         return Response.json(result)
     } catch(error) {
-        console.error("Order transaction failed", error)
+        console.error("Order transaction failed:", error)
+
         return Response.json(
             {
-                error: (error as Error).message
+                error: "Unable to process order"
             },
             {
-                status: 400
+                status: 500
             }
         )
     }
@@ -105,6 +193,20 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!session) return Response.json(
+        {error: "Unauthorized"},
+        {status: 401}
+    )
+
+    if(session.user.role !== "admin") return Response.json(
+        {error: "Forbidden"},
+        {status: 403}
+    )
+
     try {
         const result = await db
         .select()

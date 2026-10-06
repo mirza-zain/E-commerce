@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ALTER COLUMN "trackingId" SET NOT NULL;
