@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Order } from "@/app/types/order";
+import StatusControl from "./StatusControl";
 
 type Props = {
     params: Promise<{
@@ -24,7 +25,7 @@ export default async function OrderDetails({ params }: Props) {
 
         if (Number.isNaN(orderId)) notFound()
 
-        const response = await fetch(`http://zarbofficial.vercel.app/api/orders/${orderId}`)
+        const response = await fetch(`https://zarbofficial.vercel.app/api/orders/${orderId}`)
 
         if (!response.ok) throw new Error("Error Finding Order")
 
@@ -47,6 +48,7 @@ export default async function OrderDetails({ params }: Props) {
                         <span className={`inline-flex rounded-full px-3 py-1.5 text-sm font-semibold ${statusClasses[data.status] ?? "bg-slate-700 text-slate-200"}`}>
                             {data.status}
                         </span>
+                        <StatusControl orderId={data.id} initialStatus={data.status} />
                     </div>
 
                     <div className="mt-6 grid gap-4 md:grid-cols-3">

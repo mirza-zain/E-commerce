@@ -105,7 +105,7 @@ export async function PUT(request: Request, {params}: Props) {
 
     const allowdStatus = [
         "pending",
-        "confirmed",
+        "processing",
         "shipped",
         "delivered",
         "cancelled"

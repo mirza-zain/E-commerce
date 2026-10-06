@@ -94,7 +94,7 @@ export default function ManageOrders() {
 
         <div className="overflow-hidden rounded-2xl border shadow-2xl shadow-slate-950/40">
           <div className="overflow-x-auto">
-            <table className="min-w-[48rem] divide-y divide-slate-800 text-left">
+            <table className="w-full min-w-[48rem] divide-y divide-slate-800 text-left">
               <thead className="bg-slate-900/90">
                 <tr>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Orders</th>
