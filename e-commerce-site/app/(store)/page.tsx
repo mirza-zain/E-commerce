@@ -3,6 +3,7 @@ import Link from "next/link";
 import FeaturedItems from "./screens/SpecialItems";
 import Blog from "./screens/Blog";
 import FeaturedProducts from "./screens/FeaturedProducts";
+import Reviews from "./screens/Reviews";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
       <FeaturedItems />
       <Blog />
       <FeaturedProducts />
+      <Reviews />
     </>
   );
 }

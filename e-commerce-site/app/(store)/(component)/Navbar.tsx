@@ -21,7 +21,7 @@ export default function Navbar() {
     <nav className="w-full border-b border-neutral-200 bg-[#FAf8F5]/90 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
         <div>
-          <Link href="/" className="relative block h-12 w-52 overflow-hidden sm:h-14 sm:w-48" aria-label="Zarb Official home">
+          <Link href="/" className="relative block h-12 w-56 overflow-hidden sm:h-14 sm:w-48" aria-label="Zarb Official home">
             <Image src="/images/logo.png" alt="Zarb Official" fill priority className="object-cover object-center" />
           </Link>
         </div>
