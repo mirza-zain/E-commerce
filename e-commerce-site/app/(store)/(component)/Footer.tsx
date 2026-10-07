@@ -12,7 +12,7 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="text-center md:text-left flex flex-col items-center md:items-start">
             <Link href="/" className="relative block h-16 w-56 overflow-hidden" aria-label="Zarb Official home">
-              <Image src="/images/logo.jpeg" alt="Zarb Official" fill className="object-cover object-center invert" />
+              <Image src="/images/logo.png" alt="Zarb Official" fill className="object-cover object-center invert" />
             </Link>
             <p className="text-neutral-400 mt-3 text-sm sm:text-base max-w-sm">
               Crafting premium, long-lasting fragrances engineered for elegance and confidence.
