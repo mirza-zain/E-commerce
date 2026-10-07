@@ -1,6 +1,6 @@
 import {db} from "@/app/lib/db"
 import {orders, products} from "@/app/db/schema"
-import {count, lte, sql, sum} from "drizzle-orm"
+import {count, lte, ne, sql, sum} from "drizzle-orm"
 
 export default async function page() {
    const orderStats = await db
@@ -18,6 +18,7 @@ export default async function page() {
             totalRevenue: sum(orders.totalAmount)
             })
         .from(orders)
+            .where(ne(orders.status, "cancelled"))
     
     const lowStockProducts = await db
             .select({
