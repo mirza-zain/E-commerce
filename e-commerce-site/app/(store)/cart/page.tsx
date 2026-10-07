@@ -12,14 +12,27 @@ import {
   TruckIcon 
 } from "@phosphor-icons/react";
 import { useCart } from "../context/CartContext";
+import { useEffect, useState } from "react";
 
 export default function CartPage() {
   const { cart, addToCart, decreaseQuantity, removeFromCart } = useCart();
+  const [delivery, setDelivery] = useState(0);
 
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
   const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  const delivery = 0; // Free delivery
   const total = subtotal + delivery;
+
+  useEffect(() => {
+    if (cart.length === 0) return;
+    fetch("/api/pricing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: cart })
+    })
+      .then((response) => response.json())
+      .then((pricing) => setDelivery(Number(pricing.deliveryAmount ?? 0)))
+      .catch(() => setDelivery(0));
+  }, [cart]);
 
   if (cart.length === 0) {
     return (
@@ -30,7 +43,7 @@ export default function CartPage() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Your Cart is Empty</h1>
           <p className="mt-3 text-neutral-600 text-base leading-relaxed">
-            Looks like you haven't added any luxury fragrances to your collection yet.
+            Looks like you haven&apos;t added any luxury fragrances to your collection yet.
           </p>
           <Link
             href="/product"
@@ -145,7 +158,7 @@ export default function CartPage() {
             </div>
             <div className="flex justify-between text-neutral-600">
               <span>Estimated Delivery</span>
-              <span className="text-emerald-600 font-medium">FREE</span>
+              <span className="font-medium text-neutral-900">Rs. {delivery.toLocaleString()}</span>
             </div>
           </div>
 

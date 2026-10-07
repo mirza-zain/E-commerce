@@ -2,6 +2,7 @@
 
 import { InstagramLogoIcon, TiktokLogoIcon } from "@phosphor-icons/react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -10,7 +11,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 items-start">
           {/* Brand Info */}
           <div className="text-center md:text-left flex flex-col items-center md:items-start">
-            <h2 className="font-semibold text-4xl sm:text-5xl font-[Gebuk] tracking-tight">Zarb Official</h2>
+            <Link href="/" className="relative block h-16 w-56 overflow-hidden" aria-label="Zarb Official home">
+              <Image src="/images/logo.jpeg" alt="Zarb Official" fill className="object-cover object-center invert" />
+            </Link>
             <p className="text-neutral-400 mt-3 text-sm sm:text-base max-w-sm">
               Crafting premium, long-lasting fragrances engineered for elegance and confidence.
             </p>

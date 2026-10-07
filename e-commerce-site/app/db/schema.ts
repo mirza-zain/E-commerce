@@ -22,7 +22,30 @@ export const orders = pgTable('orders', {
     city: text("city").notNull(),
     totalAmount: numeric("totalAmount").notNull(),
     status: text("status").notNull(),
+    subTotal: numeric("subTotal").notNull(),
+    discountAmount: numeric("discountAmount").notNull(),
+    deliveryAmount: numeric("deliveryAmount").notNull(),
+    discountCode: text("discountCode"),
     createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull()
+})
+
+export const discountCodes = pgTable("discount_code", {
+    id: serial("id").primaryKey(),
+    code: text("code").notNull().unique(),
+    type: text("type").notNull().default("percentage"),
+    value: numeric("value").notNull(),
+    minAmount: numeric("minAmount").notNull().default("0"),
+    maxUses: integer("maxUses"),
+    usedCount: integer("usedCount").notNull().default(0),
+    expiresAt: timestamp("expiresAt", {withTimezone: true}),
+    active: boolean("active").notNull().default(true)
+})
+
+export const deliveryCharges = pgTable("delivery_charge", {
+    id: serial("id").primaryKey(),
+    city: text("city").notNull().unique(),
+    amount: numeric("amount").notNull().default("0"),
+    active: boolean("active").notNull().default(true)
 })
 
 export const orderItems = pgTable('order_items', {

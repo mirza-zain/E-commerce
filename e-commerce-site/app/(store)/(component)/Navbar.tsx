@@ -1,6 +1,7 @@
 'use client'
 
-import { ListIcon, MagnifyingGlassIcon, ShoppingBagIcon, XIcon } from "@phosphor-icons/react";
+import { ListIcon, ShoppingBagIcon, XIcon } from "@phosphor-icons/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
@@ -20,9 +21,9 @@ export default function Navbar() {
     <nav className="w-full border-b border-neutral-200 bg-[#FAf8F5]/90 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold font-[Gebuk] tracking-tight">
-            <Link href={'/'}>Zarb Official</Link>
-          </h2>
+          <Link href="/" className="relative block h-12 w-40 overflow-hidden sm:h-14 sm:w-48" aria-label="Zarb Official home">
+            <Image src="/images/logo.jpeg" alt="Zarb Official" fill priority className="object-cover object-center" />
+          </Link>
         </div>
         <div className="hidden lg:block">
           <ul className="flex justify-center items-center gap-10">

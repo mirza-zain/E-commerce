@@ -1,7 +1,8 @@
 import { db } from "@/app/lib/db";
-import { orders, orderItems, products } from "@/app/db/schema";
+import { discountCodes, deliveryCharges, orders, orderItems, products } from "@/app/db/schema";
 import { and, eq, gte, sql } from "drizzle-orm";
 import crypto from "node:crypto"
+import { calculateDiscount } from "@/app/lib/pricing";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
 
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
         const result = await db.transaction(async (tx) => {
     
             const verifiedItems = []
-            let calculatedTotal = 0
+            let subTotal = 0
     
             // Check stock for every product 
     
@@ -108,7 +109,7 @@ export async function POST(request: Request) {
         
                 const price = Number(product.price)
     
-                calculatedTotal += price * item.quantity
+                subTotal += price * item.quantity
     
                 verifiedItems.push({
                     productId: product.id,
@@ -121,6 +122,32 @@ export async function POST(request: Request) {
                 return `ZRB-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
             }
 
+            const discountCode = typeof body.discountCode === "string"
+                ? body.discountCode.trim().toUpperCase()
+                : ""
+            const discountResult = discountCode
+                ? await tx.select().from(discountCodes).where(eq(discountCodes.code, discountCode))
+                : []
+            const discount = discountResult[0] ?? null
+            const discountAmount = calculateDiscount(subTotal, discount)
+            if (discountCode && discountAmount === 0) {
+                throw new Error("Invalid or ineligible discount code")
+            }
+
+            const deliveryResult = await tx
+                .select()
+                .from(deliveryCharges)
+                .where(eq(deliveryCharges.city, body.city.trim().toLowerCase()))
+            const defaultDelivery = await tx
+                .select()
+                .from(deliveryCharges)
+                .where(eq(deliveryCharges.city, "default"))
+            const deliveryAmount = Number(deliveryResult[0]?.active
+                ? deliveryResult[0].amount
+                : defaultDelivery[0]?.active
+                    ? defaultDelivery[0].amount
+                    : "0")
+            const totalAmount = subTotal - discountAmount + deliveryAmount
             const trackingId = generateTrackingId()
 
             // Create Order
@@ -135,8 +162,12 @@ export async function POST(request: Request) {
                 phoneNum: body.phoneNum,
                 address: body.address,
                 city: body.city,
-                totalAmount: calculatedTotal.toString(),
-                status: "pending"
+                totalAmount: totalAmount.toFixed(2),
+                status: "pending",
+                subTotal: subTotal.toFixed(2),
+                discountAmount: discountAmount.toFixed(2),
+                deliveryAmount: deliveryAmount.toFixed(2),
+                discountCode: discountAmount > 0 ? discountCode : null
             })
             .returning()
         
@@ -153,6 +184,13 @@ export async function POST(request: Request) {
                     price: item.price
                 }))
             )
+
+            if (discountAmount > 0 && discount) {
+                await tx
+                    .update(discountCodes)
+                    .set({ usedCount: sql`${discountCodes.usedCount} + 1` })
+                    .where(eq(discountCodes.id, discount.id))
+            }
         
             // Decrease Stock
             

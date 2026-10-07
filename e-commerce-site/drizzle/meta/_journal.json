@@ -29,6 +29,20 @@
       "when": 1791312591217,
       "tag": "0003_slippery_the_hunter",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791394250036,
+      "tag": "0004_bright_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791395754936,
+      "tag": "0005_goofy_gateway",
+      "breakpoints": true
     }
   ]
 }

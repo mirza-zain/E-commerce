@@ -15,6 +15,10 @@ export type Order = {
     address: string,
     city: string,
     totalAmount: string,
+    subTotal: string,
+    discountAmount: string,
+    deliveryAmount: string,
+    discountCode: string | null,
     status: string,
     createdAt: string,
     items: OrderItem[]

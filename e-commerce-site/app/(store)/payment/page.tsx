@@ -3,10 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+type Pricing = {
+  subtotal: string
+  discountAmount: string
+  deliveryAmount: string
+  totalAmount: string
+  discountCode: string | null
+}
 
 export default function PaymentPage() {
+  const { cart, clearCart } = useCart()
   const [trackingId, setTrackingId] = useState<string | null>(null)
+  const [discountCode, setDiscountCode] = useState("")
+  const [pricing, setPricing] = useState<Pricing | null>(null)
+  const [pricingError, setPricingError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,33 +38,44 @@ export default function PaymentPage() {
     })
   }
 
+  useEffect(() => {
+    if (cart.length === 0) return
+    const updatePricing = async () => {
+      const response = await fetch("/api/pricing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: cart, city: formData.city, discountCode })
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setPricing(data)
+        setPricingError("")
+      } else {
+        setPricingError(data.error ?? "Unable to calculate pricing")
+      }
+    }
+    updatePricing()
+  }, [cart, formData.city, discountCode])
+
   const handleSubmit = async (event : React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        ...formData,
-        totalAmount: subTotal,
-        items: cart 
+    setSubmitting(true)
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ ...formData, discountCode, items: cart })
       })
-    })  
-
-    if(!response.ok) throw new Error("Error Processing Order")
-
-    const data = await response.json()
-    
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNum: "",
-      address: "",
-      city: ""
-    })
-    setTrackingId(data.trackingId)
-    clearCart()
+      const data = await response.json()
+      if(!response.ok) throw new Error(data.error ?? "Error Processing Order")
+      setTrackingId(data.trackingId)
+      clearCart()
+    } catch (error) {
+      setPricingError((error as Error).message)
+    } finally {
+      setSubmitting(false)
+    }
 
   }
 
@@ -69,8 +93,7 @@ export default function PaymentPage() {
     )
   }
 
-  const {cart, clearCart} = useCart()
-  const subTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0)
+  const subTotal = Number(pricing?.subtotal ?? 0)
 
   return (
     <section className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
@@ -195,10 +218,10 @@ export default function PaymentPage() {
 
             <button 
               type="submit" 
-              disabled={cart.length === 0}
+              disabled={cart.length === 0 || submitting || !pricing}
               className="w-full mt-6 py-4 bg-black text-white text-lg font-semibold uppercase rounded-lg hover:bg-neutral-800 transition active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Confirm Order
+              {submitting ? "Processing..." : "Confirm Order"}
             </button>
           </form>
         </div>
@@ -235,13 +258,28 @@ export default function PaymentPage() {
             </div>
             <div className="flex justify-between text-neutral-600">
               <span>Delivery Charges</span>
-              <span className="text-green-600 font-medium">FREE</span>
+                <span>Rs. {pricing?.deliveryAmount ?? "0.00"}</span>
             </div>
+            <div className="flex gap-2 pt-2">
+              <input
+                value={discountCode}
+                onChange={(event) => setDiscountCode(event.target.value.toUpperCase())}
+                placeholder="Discount code"
+                className="min-w-0 flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm uppercase"
+              />
+            </div>
+            {Number(pricing?.discountAmount ?? 0) > 0 && (
+              <div className="flex justify-between text-emerald-700">
+                <span>Discount</span>
+                <span>- Rs. {pricing?.discountAmount}</span>
+              </div>
+            )}
+            {pricingError && <p className="text-xs text-red-600">{pricingError}</p>}
           </div>
 
           <div className="flex justify-between items-center pt-4 text-lg font-bold text-neutral-900">
             <span>Total</span>
-            <span>Rs. {subTotal}</span>
+            <span>Rs. {pricing?.totalAmount ?? subTotal.toFixed(2)}</span>
           </div>
         </div>
       </div>

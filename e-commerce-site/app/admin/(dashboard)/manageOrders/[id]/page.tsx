@@ -95,6 +95,11 @@ export default async function OrderDetails({ params }: Props) {
                         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
                             <p className="text-sm text-slate-400">Total</p>
                             <p className="mt-2 text-lg font-semibold text-emerald-300">Rs. {data.totalAmount}</p>
+                            <div className="mt-3 space-y-1 text-xs text-slate-400">
+                                <p>Subtotal: Rs. {data.subTotal}</p>
+                                <p>Delivery: Rs. {data.deliveryAmount}</p>
+                                <p>Discount: Rs. {data.discountAmount}{data.discountCode ? ` (${data.discountCode})` : ""}</p>
+                            </div>
                         </div>
                         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
                             <p className="text-sm text-slate-400">Date</p>
