@@ -42,11 +42,11 @@ export default function Navbar() {
         </div>
         <div>
           <ul className="flex justify-center items-center gap-4 sm:gap-6 md:gap-8">
-            <li>
+            {/* <li>
               <Link href={'/'}>
                 <MagnifyingGlassIcon className="size-6 sm:size-7 md:size-8 hover:opacity-70 transition" />
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link href={"/cart"} className="relative flex justify-center items-center">
                 <ShoppingBagIcon className="size-6 sm:size-7 md:size-8 hover:opacity-70 transition" />
