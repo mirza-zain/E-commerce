@@ -7,6 +7,7 @@ import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const {cart} = useCart()
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "auto"
@@ -32,7 +33,10 @@ export default function Navbar() {
               <Link href={'/product'}>Product</Link>
             </li>
             <li className="text-lg font-medium hover:opacity-70 transition">
-              <Link href={'/'}>Contact</Link>
+              <Link href={'/track'}>Track</Link>
+            </li>
+            <li className="text-lg font-medium hover:opacity-70 transition">
+              <Link href={'/contact'}>Contact</Link>
             </li>
           </ul>
         </div>
@@ -46,8 +50,8 @@ export default function Navbar() {
             <li>
               <Link href={"/cart"} className="relative flex justify-center items-center">
                 <ShoppingBagIcon className="size-6 sm:size-7 md:size-8 hover:opacity-70 transition" />
-                {cart.length > 0 && (
-                  <span className="absolute -top-1.5 -right-2 bg-black text-white text-[10px] sm:text-xs font-semibold rounded-full min-w-4 h-4 sm:min-w-5 sm:h-5 px-1 flex items-center justify-center pointer-events-none">{cart.length}</span>
+                {totalItems > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-black text-white text-[10px] sm:text-xs font-semibold rounded-full min-w-4 h-4 sm:min-w-5 sm:h-5 px-1 flex items-center justify-center pointer-events-none" aria-label={`${totalItems} items in cart`}>{totalItems}</span>
                 )}
               </Link>
             </li>
@@ -75,7 +79,10 @@ export default function Navbar() {
               <Link href={'/product'} onClick={() => setMenuOpen(false)} >Product</Link>
             </li>
             <li className="text-2xl font-medium hover:opacity-70 transition">
-              <Link href={'/blog'} onClick={() => setMenuOpen(false)} >Blog</Link>
+              <Link href={'/track'} onClick={() => setMenuOpen(false)} >Track</Link>
+            </li>
+            <li className="text-2xl font-medium hover:opacity-70 transition">
+              <Link href={'/contact'} onClick={() => setMenuOpen(false)} >Contact</Link>
             </li>
           </ul> 
         </div>

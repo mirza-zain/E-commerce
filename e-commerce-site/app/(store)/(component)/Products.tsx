@@ -51,7 +51,7 @@ const filteredProducts = selectedCategory === "all"
   ? products
   : products.filter((product) => product.category === selectedCategory)
 const productToShow = limit ? filteredProducts.slice(0, limit) : filteredProducts
-const { addToCart } = useCart()
+const { addToCart, cart } = useCart()
 
 if(error) return <p>There is Error Loading Data</p>
 if(loading) return <p>Loading.....</p>
@@ -93,14 +93,21 @@ if(loading) return <p>Loading.....</p>
                       </div>
                     </Link>
                     <div className="flex flex-col gap-2 items-center mt-5 justify-center">
+                      {(() => {
+                        const selectedQuantity = cart.find(item => item.id === items.id)?.quantity ?? 0
+
+                        return (
                       <button 
                         disabled={items.stock <= 0}
                         onClick={() => addToCart(items)} 
-                        className="w-full py-4 text-base sm:text-lg font-medium flex items-center justify-center gap-2 border-2 rounded-md uppercase hover:bg-neutral-100 transition"
+                        aria-label={selectedQuantity > 0 ? `${selectedQuantity} selected, add another ${items.name}` : `Add ${items.name} to cart`}
+                        className={`w-full py-4 text-base sm:text-lg font-medium flex items-center justify-center gap-2 border-2 rounded-md uppercase transition-all duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${selectedQuantity > 0 ? "border-black bg-black text-white hover:bg-neutral-800" : "border-black hover:bg-neutral-100"}`}
                       >
                         <ShoppingBagIcon className="size-6" />
-                        {items.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                        {items.stock > 0 ? (selectedQuantity > 0 ? `Added ${selectedQuantity}` : "Add to Cart") : "Out of Stock"}
                       </button>
+                        )
+                      })()}
                     </div>
                 </div>        
             ))

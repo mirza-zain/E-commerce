@@ -1,6 +1,6 @@
 'use client'
 
-import { FacebookLogoIcon, InstagramLogoIcon, TiktokLogoIcon, WhatsappLogoIcon } from "@phosphor-icons/react";
+import { InstagramLogoIcon, TiktokLogoIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 
 export default function Footer() {
@@ -33,7 +33,7 @@ export default function Footer() {
                 <Link href={'/'} className="text-neutral-300 hover:text-white transition text-base font-light">About Us</Link>
               </li>
               <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition text-base font-light">Contact Us</Link>
+                <Link href={'/contact'} className="text-neutral-300 hover:text-white transition text-base font-light">Contact Us</Link>
               </li>
             </ul>
           </div>
@@ -46,22 +46,12 @@ export default function Footer() {
 
             <ul className="flex items-center gap-5 mt-6">
               <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition">
+                <Link href={'https://www.instagram.com/zarb.store'} className="text-neutral-300 hover:text-white transition">
                   <InstagramLogoIcon className="size-7 sm:size-8" />
                 </Link>
               </li>
               <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition">
-                  <FacebookLogoIcon className="size-7 sm:size-8" />
-                </Link>
-              </li>
-              <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition">
-                  <WhatsappLogoIcon className="size-7 sm:size-8" />
-                </Link>
-              </li>
-              <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition">
+                <Link href={'https://www.tiktok.com/@zarbstore7'} className="text-neutral-300 hover:text-white transition">
                   <TiktokLogoIcon className="size-7 sm:size-8" />
                 </Link>
               </li>

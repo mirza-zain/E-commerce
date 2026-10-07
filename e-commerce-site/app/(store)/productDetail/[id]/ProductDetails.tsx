@@ -22,7 +22,7 @@ export default function DetailProduct({id}: Props) {
     const [prodDetail, setProdDetail] = useState<Product | null>(null)
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(true)
-    const {addToCart} = useCart()
+    const {addToCart, cart} = useCart()
 
     useEffect(() => {
         const getProd = async () => {
@@ -45,6 +45,8 @@ export default function DetailProduct({id}: Props) {
     if (loading) return <p>Loading....</p>
     if (error) return <p>Error Loading...</p>
     if (!prodDetail) return <p>Product Not Found</p>
+
+    const selectedQuantity = cart.find(item => item.id === prodDetail.id)?.quantity ?? 0
  
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center py-10 sm:py-16 px-4 sm:px-8 lg:px-12">
@@ -83,9 +85,10 @@ export default function DetailProduct({id}: Props) {
             <button 
               disabled={prodDetail.stock <= 0}
               onClick={() => addToCart(prodDetail)} 
-              className="w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase bg-transparent hover:bg-neutral-100 text-black rounded-lg border-2 border-black transition-all active:scale-[0.98]"  
+              aria-label={selectedQuantity > 0 ? `${selectedQuantity} selected, add another ${prodDetail.name}` : `Add ${prodDetail.name} to cart`}
+              className={`w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase rounded-lg border-2 transition-all duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${selectedQuantity > 0 ? "border-black bg-black text-white hover:bg-neutral-800" : "border-black bg-transparent text-black hover:bg-neutral-100"}`}  
             >
-              {prodDetail.stock > 0 ? "Add to Cart" : "Out of Stock"}
+              {prodDetail.stock > 0 ? (selectedQuantity > 0 ? `Added ${selectedQuantity}` : "Add to Cart") : "Out of Stock"}
             </button>
           </div>
         </div>
