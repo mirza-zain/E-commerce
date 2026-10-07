@@ -1,6 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
+const CART_STORAGE_KEY = "zarb-cart";
 
 type Product = {
     id: number,
@@ -26,8 +28,35 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | undefined>(undefined)
 
-export function CartProvider({children}: any) {
+export function CartProvider({children}: { children: ReactNode }) {
     const [cart, setCart] = useState<CartItem[]>([])
+    const [hasHydrated, setHasHydrated] = useState(false)
+
+    useEffect(() => {
+        try {
+            const storedCart = window.localStorage.getItem(CART_STORAGE_KEY)
+
+            if (storedCart) {
+                const parsedCart: unknown = JSON.parse(storedCart)
+
+                if (Array.isArray(parsedCart)) {
+                    // Restore browser state once the provider has mounted.
+                    // eslint-disable-next-line react-hooks/set-state-in-effect
+                    setCart(parsedCart as CartItem[])
+                }
+            }
+        } catch {
+            window.localStorage.removeItem(CART_STORAGE_KEY)
+        } finally {
+            setHasHydrated(true)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (hasHydrated) {
+            window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
+        }
+    }, [cart, hasHydrated])
 
     const addToCart = (product: Product) => {
         setCart((currentCart) => {
