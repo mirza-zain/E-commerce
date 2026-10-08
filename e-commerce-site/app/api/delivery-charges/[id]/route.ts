@@ -12,6 +12,7 @@ async function requireAdmin() {
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
     if (!await requireAdmin()) return Response.json({ error: "Forbidden" }, { status: 403 })
     const id = Number((await params).id)
+    if (!Number.isInteger(id) || id <= 0) return Response.json({ error: "Invalid delivery charge ID" }, { status: 400 })
     const body = await request.json()
     const result = await db.update(deliveryCharges).set({ active: Boolean(body.active) }).where(eq(deliveryCharges.id, id)).returning()
     return result[0] ? Response.json(result[0]) : Response.json({ error: "Delivery charge not found" }, { status: 404 })
@@ -20,6 +21,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     if (!await requireAdmin()) return Response.json({ error: "Forbidden" }, { status: 403 })
     const id = Number((await params).id)
+    if (!Number.isInteger(id) || id <= 0) return Response.json({ error: "Invalid delivery charge ID" }, { status: 400 })
     const result = await db.delete(deliveryCharges).where(eq(deliveryCharges.id, id)).returning({ id: deliveryCharges.id })
     return result[0] ? Response.json({ ok: true }) : Response.json({ error: "Delivery charge not found" }, { status: 404 })
 }

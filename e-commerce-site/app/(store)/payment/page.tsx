@@ -27,6 +27,7 @@ export default function PaymentPage() {
     firstName: "",
     lastName: "",
     email: "",
+    phoneCountryCode: "+92",
     phoneNum: "",
     address: "",
     city: "",
@@ -35,9 +36,19 @@ export default function PaymentPage() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
     const {name, value} = event.target
+    const nextValue = name === "phoneNum"
+      ? value.replace(/\D/g, "").slice(0, 11)
+      : value
     setFormData({
       ...formData,
-      [name] : value
+      [name] : nextValue
+    })
+  }
+
+  const handlePhoneCountryCodeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      phoneCountryCode: event.target.value
     })
   }
 
@@ -165,6 +176,10 @@ export default function PaymentPage() {
                   type="text" 
                   name="firstName"
                   placeholder="Mirza" 
+                  minLength={2}
+                  maxLength={100}
+                  pattern="[A-Za-z][A-Za-z '-]{1,99}"
+                  title="Use 2 to 100 letters, spaces, apostrophes, or hyphens."
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                   value={formData.firstName}
                   onChange={handleChange}
@@ -177,6 +192,10 @@ export default function PaymentPage() {
                   type="text" 
                   name="lastName"
                   placeholder="Zain" 
+                  minLength={2}
+                  maxLength={100}
+                  pattern="[A-Za-z][A-Za-z '-]{1,99}"
+                  title="Use 2 to 100 letters, spaces, apostrophes, or hyphens."
                   className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                   value={formData.lastName}
                   onChange={handleChange}
@@ -191,6 +210,7 @@ export default function PaymentPage() {
                 type="email" 
                 name="email"
                 placeholder="zarb@example.com" 
+                maxLength={254}
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 value={formData.email}
                 onChange={handleChange}
@@ -204,6 +224,10 @@ export default function PaymentPage() {
                 type="text"
                 name="address" 
                 placeholder="House #, Street name" 
+                minLength={5}
+                maxLength={500}
+                pattern="[A-Za-z0-9][A-Za-z0-9 .,#/'-]{4,499}"
+                title="Enter a valid address using at least 5 characters."
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                 value={formData.address}
                 onChange={handleChange}
@@ -233,6 +257,10 @@ export default function PaymentPage() {
                     type="text"
                     name="city"
                     placeholder="Enter your city"
+                    minLength={2}
+                    maxLength={100}
+                    pattern="[A-Za-z][A-Za-z '-]{1,99}"
+                    title="Use 2 to 100 letters, spaces, apostrophes, or hyphens."
                     className="mt-2 w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
                     value={formData.city}
                     onChange={handleChange}
@@ -241,16 +269,38 @@ export default function PaymentPage() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>
-                <input 
-                  type="tel"
-                  name="phoneNum" 
-                  placeholder="03001234567" 
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
-                  value={formData.phoneNum}
-                  onChange={handleChange}
-                  required
-                />
+                <label htmlFor="phoneNum" className="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>
+                <div className="flex">
+                  <select
+                    aria-label="Country code"
+                    value={formData.phoneCountryCode}
+                    onChange={handlePhoneCountryCodeChange}
+                    className="w-24 rounded-l-lg border border-r-0 border-neutral-300 bg-white px-2 py-3 focus:outline-none focus:border-black"
+                  >
+                    <option value="+92">+92 PK</option>
+                    <option value="+1">+1 US/CA</option>
+                    <option value="+44">+44 UK</option>
+                    <option value="+61">+61 AU</option>
+                    <option value="+91">+91 IN</option>
+                    <option value="+966">+966 SA</option>
+                    <option value="+971">+971 AE</option>
+                  </select>
+                  <input
+                    id="phoneNum"
+                    type="tel"
+                    name="phoneNum"
+                    inputMode="numeric"
+                    pattern="[0-9]{7,11}"
+                    maxLength={11}
+                    placeholder="03001234567"
+                    title="Enter 7 to 11 digits."
+                    className="min-w-0 flex-1 rounded-r-lg border border-neutral-300 px-4 py-3 focus:outline-none focus:border-black"
+                    value={formData.phoneNum}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <p className="mt-1 text-xs text-neutral-500">Enter up to 11 digits.</p>
               </div>
             </div>
 

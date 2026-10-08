@@ -52,6 +52,10 @@ export async function POST (request: Request) {
         {status: 403}
     )
     const body = await request.json()
+    const validationError = validateProduct(body)
+    if (validationError) {
+        return Response.json({ error: validationError }, { status: 400 })
+    }
     const newProd = await db
     .insert(products)
     .values({
@@ -65,6 +69,25 @@ export async function POST (request: Request) {
     .returning()
 
     return Response.json(newProd)
+}
+
+function validateProduct(body: Record<string, unknown>) {
+    if (!body || typeof body !== "object") return "Invalid product data"
+    const name = typeof body.name === "string" ? body.name.trim() : ""
+    const description = typeof body.description === "string" ? body.description.trim() : ""
+    const category = typeof body.category === "string" ? body.category : ""
+    const price = Number(body.price)
+    const stock = Number(body.stock)
+    const image = body.image
+
+    if (!name || name.length > 150) return "Product name is required and must be 150 characters or fewer"
+    if (!description || description.length > 2000) return "Product description is required and must be 2000 characters or fewer"
+    if (!["mens", "women", "unisex"].includes(category)) return "Invalid product category"
+    if (!Number.isFinite(price) || price <= 0) return "Price must be greater than 0"
+    if (!Number.isFinite(stock) || !Number.isInteger(stock) || stock < 0) return "Stock must be a non-negative whole number"
+    if (image !== null && image !== "" && typeof image !== "string") return "Invalid product image"
+
+    return null
 }
 
 export async function GET(request: Request) {

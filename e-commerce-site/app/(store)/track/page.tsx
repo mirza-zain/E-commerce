@@ -51,8 +51,11 @@ export default function TrackOrder() {
             <p className="text-center mt-3">Enter your tracking ID to check your order status.</p>
 
             <form onSubmit={handleSubmit} className="mt-8 flex gap-3">
-                <input type="text" value={trackingId} onChange={(event) => setTrackingId(event.target.value)} 
+                <input type="text" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())}
                     placeholder="ZRB-DiDD3499" 
+                    pattern="ZRB-[A-F0-9]{8}"
+                    maxLength={12}
+                    title="Use a valid tracking ID, for example ZRB-1A2B3C4D."
                     className="flex-1 border border-neutral-300 rounded-lg px-4 py-3 focus:outline-none focus:border-black"
                     required
                 />

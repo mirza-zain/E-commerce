@@ -11,6 +11,10 @@ export async function POST(request: Request) {
     try {
         const body = await request.json()
 
+        if (!body || typeof body !== "object") {
+            return Response.json({ error: "Invalid order data" }, { status: 400 })
+        }
+
         if (!Array.isArray(body.items) || body.items.length === 0) {
             return Response.json(
                 { error: "Cart is empty" },
@@ -18,7 +22,7 @@ export async function POST(request: Request) {
             )
         }
     
-        const productIds = body.items.map((item: { id: number }) => item.id)
+        const productIds = body.items.map((item: { id: number }) => item?.id)
     
         const uniqueProductIds = new Set(productIds)
     
@@ -32,6 +36,7 @@ export async function POST(request: Request) {
             "firstName",
             "lastName",
             "email",
+            "phoneCountryCode",
             "phoneNum",
             "address",
             "city"
@@ -49,9 +54,49 @@ export async function POST(request: Request) {
             }
         }
     
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+        const namePattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
+        const addressPattern = /^[A-Za-z0-9][A-Za-z0-9 .,#/'-]{4,499}$/
+        const cityPattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
+
+        if (!namePattern.test(body.firstName.trim()) || !namePattern.test(body.lastName.trim())) {
+            return Response.json(
+                { error: "Names must contain 2 to 100 letters and may include spaces, apostrophes, or hyphens" },
+                { status: 400 }
+            )
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())) {
             return Response.json(
                 { error: "Invalid email address" },
+                { status: 400 }
+            )
+        }
+
+        const allowedCountryCodes = ["+92", "+1", "+44", "+61", "+91", "+966", "+971"]
+        if (!allowedCountryCodes.includes(body.phoneCountryCode)) {
+            return Response.json(
+                { error: "Invalid country code" },
+                { status: 400 }
+            )
+        }
+
+        if (!/^\d{7,11}$/.test(body.phoneNum)) {
+            return Response.json(
+                { error: "Phone number must contain 7 to 11 digits" },
+                { status: 400 }
+            )
+        }
+
+        if (!addressPattern.test(body.address.trim())) {
+            return Response.json(
+                { error: "Invalid address" },
+                { status: 400 }
+            )
+        }
+
+        if (!cityPattern.test(body.city.trim())) {
+            return Response.json(
+                { error: "City must contain 2 to 100 letters and may include spaces, apostrophes, or hyphens" },
                 { status: 400 }
             )
         }
@@ -60,7 +105,8 @@ export async function POST(request: Request) {
             firstName: 100,
             lastName: 100,
             email: 254,
-            phoneNum: 30,
+            phoneCountryCode: 5,
+            phoneNum: 11,
             address: 500,
             city: 100
         } as const
@@ -83,6 +129,7 @@ export async function POST(request: Request) {
     
             for (const item of body.items) {
                 if (
+                    !item ||
                     typeof item.id !== "number" ||
                     !Number.isInteger(item.id) ||
                     item.id <= 0
@@ -157,12 +204,12 @@ export async function POST(request: Request) {
             .insert(orders)
             .values({
                 trackingId,
-                firstName: body.firstName,
-                lastName: body.lastName,
-                email: body.email,
-                phoneNum: body.phoneNum,
-                address: body.address,
-                city: body.city,
+                firstName: body.firstName.trim(),
+                lastName: body.lastName.trim(),
+                email: body.email.trim().toLowerCase(),
+                phoneNum: `${body.phoneCountryCode}${body.phoneNum}`,
+                address: body.address.trim(),
+                city: body.city.trim(),
                 totalAmount: totalAmount.toFixed(2),
                 status: "pending",
                 subTotal: subTotal.toFixed(2),
@@ -270,26 +317,33 @@ export async function GET() {
             eq(orderItems.productId, products.id)
         )
 
-        const formattedOrders = result.reduce((acc, row) => {
+        type FormattedOrder = (typeof result)[number]["orders"] & {
+            items: Array<{
+                productId: number
+                productName: string
+                quantity: number
+                price: string
+            }>
+        }
+
+        const formattedOrders = result.reduce<FormattedOrder[]>((acc, row) => {
             const currentOrder = row.orders
             const item = row.order_items
             const product = row.products
 
-            let exisitingOrder = acc.find(
-                (order : any) => order.id === currentOrder.id
-            )
+            let existingOrder = acc.find((order) => order.id === currentOrder.id)
 
-            if(!exisitingOrder) {
-                exisitingOrder = {
+            if(!existingOrder) {
+                existingOrder = {
                     ...currentOrder,
                     items: []
                 }
 
-                acc.push(exisitingOrder)
+                acc.push(existingOrder)
             }
 
             if(item && product) {
-                exisitingOrder.items.push({
+                existingOrder.items.push({
                     productId: product.id,
                     productName: product.name,
                     quantity: item.quantity,
@@ -298,7 +352,7 @@ export async function GET() {
             }
 
             return acc
-        }, [] as any) 
+        }, [])
 
 
         return Response.json(formattedOrders)

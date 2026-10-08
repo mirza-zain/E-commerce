@@ -45,7 +45,7 @@ export default function StatusControl({ orderId, initialStatus }: StatusControlP
 
     return (
         <div className="flex flex-col items-start gap-2 sm:items-end">
-            <label htmlFor="order-status" className="text-sm font-medium text-slate-400">
+            <label htmlFor="order-status" className="text-sm font-medium text-neutral-600">
                 Update status
             </label>
             <div className="flex flex-wrap items-center gap-2">
@@ -56,7 +56,7 @@ export default function StatusControl({ orderId, initialStatus }: StatusControlP
                         setStatus(event.target.value)
                         setMessage(null)
                     }}
-                    className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-medium text-white outline-none focus:border-cyan-400"
+                    className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900 outline-none focus:border-black"
                 >
                     {statuses.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -68,13 +68,13 @@ export default function StatusControl({ orderId, initialStatus }: StatusControlP
                     type="button"
                     onClick={updateStatus}
                     disabled={saving || status === savedStatus}
-                    className="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {saving ? "Saving..." : "Save"}
                 </button>
             </div>
             {message && (
-                <p className="text-xs text-slate-400" role="status">
+                <p className="text-xs text-neutral-500" role="status">
                     {message}
                 </p>
             )}

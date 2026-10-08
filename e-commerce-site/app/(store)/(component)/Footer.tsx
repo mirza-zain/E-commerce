@@ -27,13 +27,13 @@ export default function Footer() {
                 <Link href={'/'} className="text-neutral-300 hover:text-white transition text-base font-light">Home</Link>
               </li>
               <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition text-base font-light">Featured</Link>
+                <Link href={'/#featured'} className="text-neutral-300 hover:text-white transition text-base font-light">Featured</Link>
               </li>
               <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition text-base font-light">Products</Link>
+                <Link href={'/product'} className="text-neutral-300 hover:text-white transition text-base font-light">Products</Link>
               </li>
               <li>
-                <Link href={'/'} className="text-neutral-300 hover:text-white transition text-base font-light">About Us</Link>
+                <Link href={'/contact'} className="text-neutral-300 hover:text-white transition text-base font-light">About Us</Link>
               </li>
               <li>
                 <Link href={'/contact'} className="text-neutral-300 hover:text-white transition text-base font-light">Contact Us</Link>
@@ -49,14 +49,14 @@ export default function Footer() {
 
             <ul className="flex items-center gap-5 mt-6">
               <li>
-                <Link href={'https://www.instagram.com/zarb.store'} className="text-neutral-300 hover:text-white transition">
+                <a href="https://www.instagram.com/zarb.store" target="_blank" rel="noreferrer" className="text-neutral-300 hover:text-white transition">
                   <InstagramLogoIcon className="size-7 sm:size-8" />
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href={'https://www.tiktok.com/@zarbstore7'} className="text-neutral-300 hover:text-white transition">
+                <a href="https://www.tiktok.com/@zarbstore7" target="_blank" rel="noreferrer" className="text-neutral-300 hover:text-white transition">
                   <TiktokLogoIcon className="size-7 sm:size-8" />
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

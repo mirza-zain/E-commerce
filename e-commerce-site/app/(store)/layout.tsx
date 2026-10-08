@@ -3,6 +3,7 @@ import React from "react";
 import { CartProvider } from "./context/CartContext";
 import Navbar from "./(component)/Navbar";
 import Footer from "./(component)/Footer";
+import ScrollToTop from "./(component)/ScrollToTop";
 
 export const metadata: Metadata = {
     title: "Shop Premium Fragrances",
@@ -16,6 +17,7 @@ export default function StoreLayout({children} : {children: React.ReactNode}) {
                 <Navbar />
                 {children}
                 <Footer />
+                <ScrollToTop />
             </CartProvider>
         </div>
     )

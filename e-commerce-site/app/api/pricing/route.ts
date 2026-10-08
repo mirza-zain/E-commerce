@@ -6,6 +6,9 @@ import { eq } from "drizzle-orm"
 export async function POST(request: Request) {
     try {
         const body = await request.json()
+        if (!body || typeof body !== "object") {
+            return Response.json({ error: "Invalid pricing data" }, { status: 400 })
+        }
         if (!Array.isArray(body.items) || body.items.length === 0) {
             return Response.json({ error: "Cart is empty" }, { status: 400 })
         }
@@ -13,7 +16,7 @@ export async function POST(request: Request) {
         const verifiedIds = new Set<number>()
         let subtotal = 0
         for (const item of body.items) {
-            if (!Number.isInteger(item.id) || !Number.isInteger(item.quantity) || item.quantity <= 0 || verifiedIds.has(item.id)) {
+            if (!item || typeof item !== "object" || !Number.isInteger(item.id) || !Number.isInteger(item.quantity) || item.quantity <= 0 || verifiedIds.has(item.id)) {
                 return Response.json({ error: "Invalid cart" }, { status: 400 })
             }
             verifiedIds.add(item.id)

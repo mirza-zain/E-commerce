@@ -10,6 +10,9 @@ type Props = {
 
 export async function GET(request: Request, {params}: Props) {
     const {trackingId} = await params
+    if (!/^ZRB-[A-F0-9]{8}$/.test(trackingId)) {
+        return Response.json({ error: "Invalid tracking ID" }, { status: 400 })
+    }
 
     const result = await db 
         .select({

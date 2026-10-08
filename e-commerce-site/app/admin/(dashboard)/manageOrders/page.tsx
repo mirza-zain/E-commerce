@@ -6,11 +6,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const statusClasses: Record<string, string> = {
-  Pending: "bg-amber-500/15 text-amber-300 ring-1 ring-inset ring-amber-500/30",
-  Processing: "bg-sky-500/15 text-sky-300 ring-1 ring-inset ring-sky-500/30",
-  Shipped: "bg-violet-500/15 text-violet-300 ring-1 ring-inset ring-violet-500/30",
-  Delivered: "bg-emerald-500/15 text-emerald-300 ring-1 ring-inset ring-emerald-500/30",
-  Cancelled: "bg-rose-500/15 text-rose-300 ring-1 ring-inset ring-rose-500/30"
+  pending: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
+  processing: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200",
+  shipped: "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200",
+  delivered: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
+  cancelled: "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200"
 };
 
 export default function ManageOrders() {
@@ -80,34 +80,34 @@ export default function ManageOrders() {
   )
 
   return (
-    <div className="min-h-screen px-4 py-10">
+    <div className="min-h-screen bg-neutral-50 px-4 py-10 text-neutral-900">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.28em]">Orders</p>
             <h1 className="mt-2 text-3xl font-bold md:text-4xl">Manage Orders</h1>
           </div>
-          <div className="w-fit rounded-full border border-cyan-500/30 bg-cyan-500 px-4 py-2 text-sm">
+          <div className="w-fit rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700 shadow-sm">
             {orders.length} total orders
           </div>
         </div>
 
         <div className="mb-6 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg shadow-slate-950/30">
-            <p className="text-sm text-white">Pending</p>
-            <p className="mt-2 text-2xl font-bold text-amber-300">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-neutral-600">Pending</p>
+            <p className="mt-2 text-2xl font-bold text-amber-700">
               {orders.filter((order) => order.status === "pending").length}
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg shadow-slate-950/30">
-            <p className="text-sm text-white">Processing</p>
-            <p className="mt-2 text-2xl font-bold text-cyan-500">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-neutral-600">Processing</p>
+            <p className="mt-2 text-2xl font-bold text-sky-700">
               {orders.filter((order) => order.status === "processing").length}
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg shadow-slate-950/30">
-            <p className="text-sm text-white">Delivered</p>
-            <p className="mt-2 text-2xl font-bold text-red-500">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-neutral-600">Delivered</p>
+            <p className="mt-2 text-2xl font-bold text-emerald-700">
               {orders.filter((order) => order.status === "delivered").length}
             </p>
           </div>
@@ -115,28 +115,28 @@ export default function ManageOrders() {
 
         {actionError && <p className="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{actionError}</p>}
 
-        <div className="overflow-hidden rounded-2xl border shadow-2xl shadow-slate-950/40">
+        <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-3xl divide-y divide-slate-800 text-left">
-              <thead className="bg-slate-900/90">
+            <table className="w-full min-w-3xl divide-y divide-neutral-200 text-left">
+              <thead className="bg-neutral-100">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Orders</th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Customer</th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Total</th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Status</th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Date</th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Action</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Orders</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Customer</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Total</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Status</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Date</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Action</th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-neutral-200">
                 {orders.map((order) => (
-                  <tr key={order.id} className="transition hover:bg-slate-800/50">
-                    <td className="px-6 py-4 font-medium text-cyan-700">#{order.id}</td>
-                    <td className="px-6 py-4">{order.firstName} {order.lastName}</td>
-                    <td className="px-6 py-4 font-medium">Rs. {order.totalAmount}</td>
+                  <tr key={order.id} className="transition hover:bg-neutral-50">
+                    <td className="px-6 py-4 font-medium text-neutral-900">#{order.id}</td>
+                    <td className="px-6 py-4 text-neutral-700">{order.firstName} {order.lastName}</td>
+                    <td className="px-6 py-4 font-medium text-neutral-900">Rs. {order.totalAmount}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClasses[order.status] ?? "bg-slate-700 text-slate-200"}`}>
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClasses[order.status] ?? "bg-neutral-100 text-neutral-700"}`}>
                         {order.status}
                       </span>
                     </td>
@@ -145,7 +145,7 @@ export default function ManageOrders() {
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/admin/manageOrders/${order.id}`}
-                          className="inline-flex items-center rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-sm font-medium text-cyan-800 transition hover:border-cyan-400 hover:bg-cyan-500/20"
+                          className="inline-flex items-center rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition hover:border-black hover:bg-neutral-100"
                         >
                           View
                         </Link>

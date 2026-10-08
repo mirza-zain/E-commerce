@@ -21,14 +21,27 @@ export async function POST(request: Request) {
     const type = body.type === "fixed" ? "fixed" : "percentage"
     const value = Number(body.value)
     const minAmount = Number(body.minAmount ?? 0)
-    if (!code || !Number.isFinite(value) || value <= 0 || !Number.isFinite(minAmount) || minAmount < 0 || (type === "percentage" && value > 100)) {
+    const maxUses = body.maxUses === "" || body.maxUses === null || body.maxUses === undefined
+        ? null
+        : Number(body.maxUses)
+    const expiresAt = body.expiresAt ? new Date(body.expiresAt) : null
+    if (
+        !/^[A-Z0-9_-]{3,50}$/.test(code) ||
+        !Number.isFinite(value) ||
+        value <= 0 ||
+        !Number.isFinite(minAmount) ||
+        minAmount < 0 ||
+        (type === "percentage" && value > 100) ||
+        (maxUses !== null && (!Number.isInteger(maxUses) || maxUses <= 0)) ||
+        (expiresAt !== null && Number.isNaN(expiresAt.getTime()))
+    ) {
         return Response.json({ error: "Invalid discount details" }, { status: 400 })
     }
     try {
         const result = await db.insert(discountCodes).values({
             code, type, value: value.toFixed(2), minAmount: minAmount.toFixed(2),
-            maxUses: body.maxUses ? Number(body.maxUses) : null,
-            expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
+            maxUses,
+            expiresAt,
             active: body.active !== false
         }).returning()
         return Response.json(result[0], { status: 201 })

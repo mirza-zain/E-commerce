@@ -22,7 +22,9 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <FeaturedItems />
+      <div id="featured">
+        <FeaturedItems />
+      </div>
       <Blog />
       <section className="w-full px-4 py-8 sm:px-8 sm:py-12">
         <div className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-2xl bg-neutral-100 shadow-sm sm:rounded-3xl" style={{ aspectRatio: "728 / 90" }}>
