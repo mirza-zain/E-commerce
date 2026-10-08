@@ -78,7 +78,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
                   Luxury Perfume House • Pakistan
                 </p>
                 <p className="text-[11px] text-neutral-500 mt-0.5">
-                  support@zarbofficial.com • zarbofficial.com
+                  storezarb@gmail.com • https://zarb.store
                 </p>
               </div>
             </div>
@@ -167,32 +167,35 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
               </p>
             </div>
 
-            {/* SENDER / RETURN ADDRESS */}
+            {/* SHIPPER & RETURN POLICY INFO */}
             <div className="border border-neutral-400 p-4 rounded-xl space-y-1.5 bg-neutral-50/50 print:bg-white print:border-black">
               <div className="flex items-center justify-between pb-1.5 border-b border-neutral-300">
                 <span className="text-xs font-bold uppercase tracking-wider text-neutral-600">
-                  ↩ Return If Undelivered
+                  🏷️ Shipper & Return Policy
                 </span>
                 <span className="text-[10px] font-semibold text-neutral-500">
-                  SHIPPER
+                  ZARB
                 </span>
               </div>
 
               <p className="text-sm font-bold text-neutral-900">
-                Zarb Official Fulfillment Center
+                Zarb Official
               </p>
 
-              <p className="text-xs text-neutral-600">
-                Karachi Central Logistics Hub, Sindh, Pakistan
+              <p className="text-xs text-neutral-700">
+                Email: <span className="font-semibold">storezarb@gmail.com</span>
               </p>
 
-              <p className="text-xs text-neutral-600">
-                Email: support@zarbofficial.com
+              <p className="text-xs text-neutral-700">
+                Website: <span className="font-semibold">https://zarb.store</span>
               </p>
 
-              <p className="text-xs text-neutral-600">
-                Web: https://zarbofficial.com
-              </p>
+              <div className="pt-2 border-t border-neutral-200 text-[11px] text-neutral-600 leading-snug">
+                <p className="font-bold text-neutral-900">Return & Exchange Policy:</p>
+                <p className="text-[10px] text-neutral-600 mt-0.5">
+                  For returns, replacements, or damaged-in-transit inquiries, please contact our support team at <span className="font-medium text-neutral-900">storezarb@gmail.com</span> or visit <span className="font-medium text-neutral-900">https://zarb.store</span>.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -307,7 +310,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
             </div>
 
             <div className="text-[11px] text-neutral-500 font-mono">
-              VERIFIED & PACKED BY ZARB LOGISTICS
+              VERIFIED & PACKED • HTTPS://ZARB.STORE
             </div>
           </div>
 
