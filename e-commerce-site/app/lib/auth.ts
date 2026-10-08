@@ -11,7 +11,7 @@ export const auth = betterAuth({
 
     trustedOrigins: [
         "http://localhost:3000",
-        "https://zarbofficial.vercel.app"
+        "https://zarb.store"
     ],
 
     user: {
