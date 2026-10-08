@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next";
 import React from "react";
 import { CartProvider } from "./context/CartContext";
