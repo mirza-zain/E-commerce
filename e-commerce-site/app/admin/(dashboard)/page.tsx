@@ -1,6 +1,7 @@
 import {db} from "@/app/lib/db"
 import {orders, products} from "@/app/db/schema"
 import {count, lte, ne, sql, sum} from "drizzle-orm"
+import NotificationToggle from "./(component)/NotificationToggle"
 
 export default async function page() {
    const orderStats = await db
@@ -41,6 +42,8 @@ export default async function page() {
                     </div>
                     <p className="text-sm text-neutral-500">A quick look at your store activity</p>
                 </div>
+
+                <NotificationToggle />
 
                 <section className="grid gap-4 py-8 md:grid-cols-3" aria-label="Order summary">
                     <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">

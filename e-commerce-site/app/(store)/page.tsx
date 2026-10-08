@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import Image from "next/image";
 import FeaturedItems from "./screens/SpecialItems";
 import Blog from "./screens/Blog";
 import FeaturedProducts from "./screens/FeaturedProducts";
@@ -8,19 +9,32 @@ import Reviews from "./screens/Reviews";
 export default function Home() {
   return (
     <>
-      <header className="w-full min-h-[85vh] flex items-center justify-center py-10 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div className="w-full flex flex-col-reverse lg:flex-row justify-between items-center gap-10">
-          <div className="w-full lg:w-1/2 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-[0.05em] uppercase leading-tight">Explore Premium Scent</h1>
-            <button className="bg-black hover:bg-neutral-800 duration-300 ease-in-out text-white px-8 py-4 sm:px-10 sm:py-5 text-xl sm:text-2xl font-semibold rounded-md mt-8 uppercase tracking-wide"><Link href={'/product'} >Shop Now</Link></button>
+      <header className="mx-auto flex min-h-[85vh] w-full max-w-7xl items-center justify-center px-4 py-10 sm:px-8">
+        <div className="flex w-full flex-col-reverse items-center justify-between gap-10 lg:flex-row">
+          <div className="w-full text-center lg:w-1/2 lg:text-left">
+            <h1 className="text-4xl font-bold uppercase leading-tight tracking-wider sm:text-6xl lg:text-7xl xl:text-8xl">Explore Premium Scent</h1>
+            <Link href="/product" className="mt-8 inline-block rounded-md bg-black px-8 py-4 text-xl font-semibold uppercase tracking-wide text-white transition duration-300 ease-in-out hover:bg-neutral-800 sm:px-10 sm:py-5 sm:text-2xl">
+              Shop Now
+            </Link>
           </div>
-          <div className="w-full lg:w-1/2 flex justify-center items-center">
-              <img src="/images/icon2.png" className="w-4/5 sm:w-3/5 lg:w-4/5 max-w-md aspect-square object-cover rounded-full border-2 border-neutral-200 shadow-lg" alt="icon" />
+          <div className="flex w-full items-center justify-center lg:w-1/2">
+            <Image src="/images/icon2.png" width={520} height={520} priority className="aspect-square w-4/5 max-w-md rounded-full border-2 border-neutral-200 object-cover shadow-lg sm:w-3/5 lg:w-4/5" alt="Zarb perfume" />
           </div>
         </div>
       </header>
       <FeaturedItems />
       <Blog />
+      <section className="w-full px-4 py-8 sm:px-8 sm:py-12">
+        <div className="relative mx-auto aspect-1920/1165 w-full max-w-6xl overflow-hidden rounded-2xl shadow-sm sm:rounded-3xl">
+          <Image
+            src="/images/zarb-website-banner.png"
+            alt="Save money and get a new Zarb perfume"
+            fill
+            sizes="(max-width: 1280px) 100vw, 1152px"
+            className="object-cover object-center"
+          />
+        </div>
+      </section>
       <FeaturedProducts />
       <Reviews />
     </>

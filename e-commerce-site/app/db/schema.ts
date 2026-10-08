@@ -69,6 +69,17 @@ export const user = pgTable("user", {
         .notNull(),
 })
 
+export const pushSubscriptions = pgTable("push_subscription", {
+    id: serial("id").primaryKey(),
+    userId: text("user_id")
+        .notNull()
+        .references(() => user.id, { onDelete: "cascade" }),
+    endpoint: text("endpoint").notNull().unique(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+})
+
 export const session = pgTable(
     "session",
     {

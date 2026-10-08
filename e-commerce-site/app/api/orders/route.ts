@@ -3,6 +3,7 @@ import { discountCodes, deliveryCharges, orders, orderItems, products } from "@/
 import { and, eq, gte, sql } from "drizzle-orm";
 import crypto from "node:crypto"
 import { calculateDiscount } from "@/app/lib/pricing";
+import { sendNewOrderNotification } from "@/app/lib/push";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
 
@@ -213,6 +214,17 @@ export async function POST(request: Request) {
     
             return newOrder[0]
         })
+
+        try {
+            await sendNewOrderNotification({
+                id: result.id,
+                firstName: result.firstName,
+                lastName: result.lastName,
+                totalAmount: result.totalAmount,
+            })
+        } catch (error) {
+            console.error("Order notification failed:", error)
+        }
     
         return Response.json(result)
     } catch(error) {

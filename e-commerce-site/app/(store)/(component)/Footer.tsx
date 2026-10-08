@@ -45,7 +45,7 @@ export default function Footer() {
           <div className="text-center md:text-left flex flex-col items-center md:items-start">
             <h3 className="text-lg font-semibold uppercase tracking-wider text-neutral-400 mb-4">Contact</h3>
             <p className="text-base text-neutral-300 font-light">Karachi, Pakistan</p>
-            <p className="text-sm text-neutral-400 mt-1 font-light">support@zarbofficial.com</p>
+            <p className="text-sm text-neutral-400 mt-1 font-light">storezarb@gmail.com</p>
 
             <ul className="flex items-center gap-5 mt-6">
               <li>

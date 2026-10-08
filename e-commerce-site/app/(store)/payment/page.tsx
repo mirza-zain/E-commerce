@@ -20,6 +20,8 @@ export default function PaymentPage() {
   const [pricing, setPricing] = useState<Pricing | null>(null)
   const [pricingError, setPricingError] = useState("")
   const [submitting, setSubmitting] = useState(false)
+  const [deliveryCities, setDeliveryCities] = useState<string[]>([])
+  const [selectedCityOption, setSelectedCityOption] = useState("other")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -37,6 +39,31 @@ export default function PaymentPage() {
       [name] : value
     })
   }
+
+  const handleCitySelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value
+    setSelectedCityOption(value)
+    setFormData({
+      ...formData,
+      city: value === "other" ? "" : value
+    })
+  }
+
+  useEffect(() => {
+    const getDeliveryCities = async () => {
+      try {
+        const response = await fetch("/api/delivery-options")
+        if (!response.ok) return
+
+        const data: { cities?: string[] } = await response.json()
+        setDeliveryCities(data.cities ?? [])
+      } catch {
+        setDeliveryCities([])
+      }
+    }
+
+    getDeliveryCities()
+  }, [])
 
   useEffect(() => {
     if (cart.length === 0) return
@@ -170,15 +197,31 @@ export default function PaymentPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">City</label>
-                <input 
-                  type="text"
-                  name="city" 
-                  placeholder="Karachi" 
-                  className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                />
+                {deliveryCities.length > 0 && (
+                  <select
+                    value={selectedCityOption}
+                    onChange={handleCitySelect}
+                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg bg-white focus:outline-none focus:border-black"
+                  >
+                    <option value="other">Other city</option>
+                    {deliveryCities.map((city) => (
+                      <option key={city} value={city}>
+                        {city.replace(/\b\w/g, (letter) => letter.toUpperCase())}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {(deliveryCities.length === 0 || selectedCityOption === "other") && (
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Enter your city"
+                    className="mt-2 w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>

@@ -8,8 +8,8 @@ import {
 const contactDetails = [
   {
     label: "Email",
-    value: "support@yourstore.com",
-    href: "mailto:support@yourstore.com",
+    value: "storezarb@gmail.com",
+    href: "mailto:storezarb@gmail.com",
     icon: EnvelopeSimpleIcon,
   },
   {
@@ -52,7 +52,7 @@ export default function ContactPage() {
                 <Icon className="size-8 text-neutral-700 transition-transform duration-200 group-hover:scale-110" weight="light" />
                 <span>
                   <span className="block text-sm uppercase tracking-[0.2em] text-neutral-500">{label}</span>
-                  <span className="mt-2 block break-words text-lg font-medium text-neutral-900">{value}</span>
+                  <span className="mt-2 block wrap-break-word text-lg font-medium text-neutral-900">{value}</span>
                 </span>
               </a>
             ))}

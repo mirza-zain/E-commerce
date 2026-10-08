@@ -1,7 +1,8 @@
 'use client'
 
 import Link from "next/link";
-import { ShoppingBagIcon } from "@phosphor-icons/react";
+import Image from "next/image";
+import { CaretLeftIcon, CaretRightIcon, ShoppingBagIcon } from "@phosphor-icons/react";
 import { useCart } from "../context/CartContext";
 import { useEffect, useState } from "react";
 
@@ -25,17 +26,22 @@ const [products, setProducts] = useState<Product[]>([])
 const [error, setError] = useState("")
 const [loading, setLoading] = useState(true)
 const [selectedCategory, setSelectedCategory] = useState("all")
+const [currentPage, setCurrentPage] = useState(1)
+const [totalPages, setTotalPages] = useState(1)
 
 useEffect(() => {
   async function getProducts() {
+    setLoading(true)
     try {
-      const response = await fetch("/api/product")
+      const pageSize = limit ?? 8
+      const response = await fetch(`/api/product?catalog=true&page=${limit ? 1 : currentPage}&pageSize=${pageSize}&category=${selectedCategory}`)
   
       if(!response.ok) throw new Error("Couldn't fetch product")
       
-      const result = await response.json()
+      const result: { products: Product[], totalPages: number } = await response.json()
 
-      setProducts(result)
+      setProducts(result.products)
+      setTotalPages(result.totalPages)
       setLoading(false)
       
     } catch(error) {
@@ -45,12 +51,9 @@ useEffect(() => {
 
   getProducts()
 
-}, [])
+}, [currentPage, limit, selectedCategory])
 
-const filteredProducts = selectedCategory === "all"
-  ? products
-  : products.filter((product) => product.category === selectedCategory)
-const productToShow = limit ? filteredProducts.slice(0, limit) : filteredProducts
+const productToShow = products
 const { addToCart, cart } = useCart()
 
 if(error) return <p>There is Error Loading Data</p>
@@ -68,7 +71,10 @@ if(loading) return <p>Loading.....</p>
             <button
               key={category.value}
               type="button"
-              onClick={() => setSelectedCategory(category.value)}
+              onClick={() => {
+                setSelectedCategory(category.value)
+                setCurrentPage(1)
+              }}
               className={`rounded-full border px-5 py-2.5 text-sm font-medium transition sm:px-6 ${
                 selectedCategory === category.value
                   ? "border-black bg-black text-white"
@@ -85,7 +91,15 @@ if(loading) return <p>Loading.....</p>
             productToShow.map(items => (
                 <div className="w-full flex flex-col" key={items.id}>
                     <Link href={`/productDetail/${items.id}`}>
-                      <img src={items.image} className="w-full aspect-4/5 object-cover rounded-2xl shadow-sm shadow-black" alt="product 1" />
+                      <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl shadow-sm shadow-black">
+                        <Image
+                          src={items.image}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className="object-cover"
+                          alt={`${items.name} perfume`}
+                        />
+                      </div>
                       <p className="text-base text-neutral-500 mt-3">Zarb Store ©</p>
                       <div className="flex flex-col justify-center items-center gap-2 mt-1">
                           <h3 className="text-xl sm:text-2xl font-medium text-center">Zarb Offical {items.name} Perfume</h3>
@@ -113,6 +127,31 @@ if(loading) return <p>Loading.....</p>
             ))
         }
       </div>
+      {!limit && totalPages > 1 && (
+        <nav className="mt-12 flex items-center justify-center gap-2" aria-label="Product pages">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((page) => page - 1)}
+            disabled={currentPage === 1}
+            className="inline-flex items-center gap-1 rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium transition hover:border-black disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <CaretLeftIcon className="size-4" />
+            Previous
+          </button>
+          <span className="px-3 text-sm text-neutral-500">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setCurrentPage((page) => page + 1)}
+            disabled={currentPage === totalPages}
+            className="inline-flex items-center gap-1 rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium transition hover:border-black disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next
+            <CaretRightIcon className="size-4" />
+          </button>
+        </nav>
+      )}
     </div>
   )
 }
