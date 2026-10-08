@@ -13,12 +13,49 @@ type Pricing = {
   discountCode: string | null
 }
 
+type CheckoutField = "firstName" | "lastName" | "email" | "address" | "city" | "phoneNum"
+type FieldErrors = Partial<Record<CheckoutField, string>>
+
+const namePattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
+const addressPattern = /^[A-Za-z0-9][A-Za-z0-9 .,#/'-]{4,499}$/
+const cityPattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
+
+function validateField(name: CheckoutField, value: string) {
+  const trimmedValue = value.trim()
+
+  if (!trimmedValue) return "This field is required."
+  if (name === "firstName" || name === "lastName") {
+    return namePattern.test(trimmedValue)
+      ? ""
+      : "Use 2 to 100 letters, spaces, apostrophes, or hyphens."
+  }
+  if (name === "email") {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue)
+      ? ""
+      : "Enter a valid email address."
+  }
+  if (name === "address") {
+    return addressPattern.test(trimmedValue)
+      ? ""
+      : "Use at least 5 valid address characters."
+  }
+  if (name === "city") {
+    return cityPattern.test(trimmedValue)
+      ? ""
+      : "Use 2 to 100 letters, spaces, apostrophes, or hyphens."
+  }
+  return /^\d{7,11}$/.test(trimmedValue)
+    ? ""
+    : "Enter 7 to 11 digits."
+}
+
 export default function PaymentPage() {
   const { cart, clearCart } = useCart()
   const [trackingId, setTrackingId] = useState<string | null>(null)
   const [discountCode, setDiscountCode] = useState("")
   const [pricing, setPricing] = useState<Pricing | null>(null)
   const [pricingError, setPricingError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [trackingCopied, setTrackingCopied] = useState(false)
   const [deliveryCities, setDeliveryCities] = useState<string[]>([])
@@ -43,6 +80,13 @@ export default function PaymentPage() {
       ...formData,
       [name] : nextValue
     })
+    if (name in formData && name !== "phoneCountryCode") {
+      const field = name as CheckoutField
+      setFieldErrors((currentErrors) => ({
+        ...currentErrors,
+        [field]: validateField(field, nextValue)
+      }))
+    }
   }
 
   const handlePhoneCountryCodeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -59,6 +103,10 @@ export default function PaymentPage() {
       ...formData,
       city: value === "other" ? "" : value
     })
+    setFieldErrors((currentErrors) => ({
+      ...currentErrors,
+      city: value === "other" ? "" : validateField("city", value)
+    }))
   }
 
   const copyTrackingId = async () => {
@@ -105,6 +153,18 @@ export default function PaymentPage() {
 
   const handleSubmit = async (event : React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    const nextErrors = (["firstName", "lastName", "email", "address", "city", "phoneNum"] as CheckoutField[])
+      .reduce<FieldErrors>((errors, field) => {
+        const error = validateField(field, formData[field])
+        if (error) errors[field] = error
+        return errors
+      }, {})
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) {
+      setPricingError("")
+      return
+    }
 
     setSubmitting(true)
     try {
@@ -185,6 +245,7 @@ export default function PaymentPage() {
                   onChange={handleChange}
                   required
                 />
+                {fieldErrors.firstName && <p className="mt-1 text-xs text-red-600">{fieldErrors.firstName}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1">Last Name</label>
@@ -201,6 +262,7 @@ export default function PaymentPage() {
                   onChange={handleChange}
                   required
                 />
+                {fieldErrors.lastName && <p className="mt-1 text-xs text-red-600">{fieldErrors.lastName}</p>}
               </div>
             </div>
 
@@ -216,6 +278,7 @@ export default function PaymentPage() {
                 onChange={handleChange}
                 required
               />
+              {fieldErrors.email && <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>}
             </div>
 
             <div>
@@ -233,6 +296,7 @@ export default function PaymentPage() {
                 onChange={handleChange}
                 required
               />
+              {fieldErrors.address && <p className="mt-1 text-xs text-red-600">{fieldErrors.address}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -267,6 +331,7 @@ export default function PaymentPage() {
                     required
                   />
                 )}
+                {fieldErrors.city && <p className="mt-1 text-xs text-red-600">{fieldErrors.city}</p>}
               </div>
               <div>
                 <label htmlFor="phoneNum" className="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>
@@ -300,6 +365,7 @@ export default function PaymentPage() {
                     required
                   />
                 </div>
+                {fieldErrors.phoneNum && <p className="mt-1 text-xs text-red-600">{fieldErrors.phoneNum}</p>}
                 <p className="mt-1 text-xs text-neutral-500">Enter up to 11 digits.</p>
               </div>
             </div>
