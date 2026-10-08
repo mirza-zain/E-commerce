@@ -74,7 +74,7 @@ export default async function OrderDetails({ params }: Props) {
             }))
     }
     return (
-        <div className="min-h-screen bg-neutral-50 px-4 py-6 text-neutral-900 sm:py-10 print:bg-white">
+        <div className="min-h-screen bg-neutral-50 px-4 py-6 text-neutral-900 sm:py-10 print:min-h-0 print:bg-white print:p-0">
             <div className="mx-auto max-w-5xl space-y-6">
                 <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm md:p-8 print:hidden">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

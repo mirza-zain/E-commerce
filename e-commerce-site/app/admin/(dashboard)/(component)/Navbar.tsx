@@ -15,7 +15,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="flex w-full shrink-0 flex-col border-b border-neutral-200 bg-white px-4 py-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r md:px-5 md:py-8">
+    <nav className="flex w-full shrink-0 flex-col border-b border-neutral-200 bg-white px-4 py-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r md:px-5 md:py-8 print:hidden">
       <div className="border-b border-neutral-100 px-1 pb-4 md:px-3 md:pb-6">
         <h1 className="text-2xl font-bold font-[Gebuk] tracking-tight">
           Zarb Admin
