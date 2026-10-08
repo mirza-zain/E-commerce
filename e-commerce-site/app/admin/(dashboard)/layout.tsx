@@ -1,4 +1,4 @@
-import { Metadata } from "next/dist/types";
+import type { Metadata } from "next";
 import React from "react";
 import Navbar from "./(component)/Navbar";
 import { auth } from "@/app/lib/auth";
@@ -7,8 +7,12 @@ import { redirect } from "next/navigation";
 
 
 export const metadata: Metadata = {
-    title: "",
-    description: ""
+    title: "Admin Dashboard",
+    description: "Zarb Official store administration dashboard.",
+    robots: {
+        index: false,
+        follow: false,
+    },
 }
 
 export default async function AdminLayout({children} : {children: React.ReactNode}) {

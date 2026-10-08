@@ -1,12 +1,12 @@
-import { Metadata } from "next/dist/types";
+import type { Metadata } from "next";
 import React from "react";
 import { CartProvider } from "./context/CartContext";
 import Navbar from "./(component)/Navbar";
 import Footer from "./(component)/Footer";
 
-export const metadata : Metadata = {
-    title: "",
-    description: ""
+export const metadata: Metadata = {
+    title: "Shop Premium Fragrances",
+    description: "Shop premium fragrances from Zarb Official and discover your next signature scent.",
 }
 
 export default function StoreLayout({children} : {children: React.ReactNode}) {
