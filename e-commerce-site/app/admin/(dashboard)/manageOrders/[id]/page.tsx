@@ -141,9 +141,9 @@ export default async function OrderDetails({ params }: Props) {
                                 <p className="mt-1 text-neutral-900">{data.address}</p>
                             </div>
                         </div>
-                        <InvoicePrintButton order={data} />
                     </div>
                 </div>
+                <InvoicePrintButton order={data} />
             </div>
         </div>
     )
