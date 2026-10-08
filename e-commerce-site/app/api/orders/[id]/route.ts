@@ -1,6 +1,6 @@
 import {db} from "@/app/lib/db"
 import {orders, products, orderItems} from "@/app/db/schema"
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
 
@@ -142,4 +142,60 @@ export async function PUT(request: Request, {params}: Props) {
     }
 
     return Response.json(changeStatus[0])
+}
+
+export async function DELETE(request: Request, {params}: Props) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!session) return Response.json(
+        {error: "Unauthorized"},
+        {status: 401}
+    )
+
+    if(session.user.role !== "admin") return Response.json(
+        {error: "Forbidden"},
+        {status: 403}
+    )
+
+    const orderId = Number((await params).id)
+    if(!Number.isInteger(orderId) || orderId <= 0) {
+        return Response.json(
+            {error: "Invalid order ID"},
+            {status: 400}
+        )
+    }
+
+    const deletedOrder = await db.transaction(async (tx) => {
+        const items = await tx
+            .select({ productId: orderItems.productId, quantity: orderItems.quantity })
+            .from(orderItems)
+            .where(eq(orderItems.orderId, orderId))
+
+        for (const item of items) {
+            await tx
+                .update(products)
+                .set({ stock: sql`${products.stock} + ${item.quantity}` })
+                .where(eq(products.id, item.productId))
+        }
+
+        await tx.delete(orderItems).where(eq(orderItems.orderId, orderId))
+
+        const result = await tx
+            .delete(orders)
+            .where(eq(orders.id, orderId))
+            .returning({ id: orders.id })
+
+        return result[0]
+    })
+
+    if(!deletedOrder) {
+        return Response.json(
+            {error: "Order not found"},
+            {status: 404}
+        )
+    }
+
+    return Response.json({ok: true, id: deletedOrder.id})
 }

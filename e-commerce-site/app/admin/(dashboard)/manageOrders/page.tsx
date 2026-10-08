@@ -1,6 +1,7 @@
 'use client'
 
 import { Order } from "@/app/types/order";
+import { TrashIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -16,6 +17,26 @@ export default function ManageOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState("")
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+
+  const handleDelete = async (orderId: number) => {
+    if (!window.confirm("Delete this order? Its product stock will be restored.")) return
+
+    setDeletingId(orderId)
+    setActionError("")
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, { method: "DELETE" })
+      const data: { error?: string } = await response.json()
+      if (!response.ok) throw new Error(data.error ?? "Unable to delete order")
+
+      setOrders((currentOrders) => currentOrders.filter((order) => order.id !== orderId))
+    } catch (error) {
+      setActionError((error as Error).message)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -92,9 +113,11 @@ export default function ManageOrders() {
           </div>
         </div>
 
+        {actionError && <p className="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{actionError}</p>}
+
         <div className="overflow-hidden rounded-2xl border shadow-2xl shadow-slate-950/40">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[48rem] divide-y divide-slate-800 text-left">
+            <table className="w-full min-w-3xl divide-y divide-slate-800 text-left">
               <thead className="bg-slate-900/90">
                 <tr>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white">Orders</th>
@@ -119,12 +142,23 @@ export default function ManageOrders() {
                     </td>
                     <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
-                      <Link
-                        href={`/admin/manageOrders/${order.id}`}
-                        className="inline-flex items-center rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-sm font-medium text-cyan-800 transition hover:border-cyan-400 hover:bg-cyan-500/20"
-                      >
-                        View
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/admin/manageOrders/${order.id}`}
+                          className="inline-flex items-center rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-sm font-medium text-cyan-800 transition hover:border-cyan-400 hover:bg-cyan-500/20"
+                        >
+                          View
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => void handleDelete(order.id)}
+                          disabled={deletingId === order.id}
+                          aria-label={`Delete order ${order.id}`}
+                          className="inline-flex items-center rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-rose-700 transition hover:border-rose-500 hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <TrashIcon className="size-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

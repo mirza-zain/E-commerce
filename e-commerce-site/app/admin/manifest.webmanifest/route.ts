@@ -1,11 +1,11 @@
-import type { MetadataRoute } from "next"
-
-export default function manifest(): MetadataRoute.Manifest {
-    return {
+export function GET() {
+    return Response.json({
         name: "Zarb Official Admin",
         short_name: "Zarb Admin",
         description: "Zarb Official store administration",
         start_url: "/admin",
+        id: "/admin",
+        scope: "/admin",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#ffffff",
@@ -16,5 +16,9 @@ export default function manifest(): MetadataRoute.Manifest {
                 type: "image/png",
             },
         ],
-    }
+    }, {
+        headers: {
+            "Content-Type": "application/manifest+json",
+        },
+    })
 }

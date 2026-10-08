@@ -1,6 +1,7 @@
 import {db} from "@/app/lib/db"
 import {orders, products} from "@/app/db/schema"
 import {count, lte, ne, sql, sum} from "drizzle-orm"
+import InstallAdminButton from "./(component)/InstallAdminButton"
 import NotificationToggle from "./(component)/NotificationToggle"
 
 export default async function page() {
@@ -44,6 +45,7 @@ export default async function page() {
                 </div>
 
                 <NotificationToggle />
+                <InstallAdminButton />
 
                 <section className="grid gap-4 py-8 md:grid-cols-3" aria-label="Order summary">
                     <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">

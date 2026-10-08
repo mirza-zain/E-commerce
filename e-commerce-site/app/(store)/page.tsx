@@ -25,13 +25,13 @@ export default function Home() {
       <FeaturedItems />
       <Blog />
       <section className="w-full px-4 py-8 sm:px-8 sm:py-12">
-        <div className="relative mx-auto aspect-1920/1165 w-full max-w-6xl overflow-hidden rounded-2xl shadow-sm sm:rounded-3xl">
+        <div className="relative mx-auto h-22.5 w-full max-w-182 overflow-hidden rounded-2xl bg-neutral-100 shadow-sm sm:rounded-3xl" style={{ aspectRatio: "728 / 90" }}>
           <Image
-            src="/images/zarb-website-banner.png"
-            alt="Save money and get a new Zarb perfume"
+            src="/images/promo-strip-1456x180@2x.png"
+            alt="Zarb Official promotion"
             fill
-            sizes="(max-width: 1280px) 100vw, 1152px"
-            className="object-cover object-center"
+            sizes="(max-width: 728px) 100vw, 728px"
+            className="object-cover"
           />
         </div>
       </section>

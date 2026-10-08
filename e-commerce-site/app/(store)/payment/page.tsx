@@ -20,6 +20,7 @@ export default function PaymentPage() {
   const [pricing, setPricing] = useState<Pricing | null>(null)
   const [pricingError, setPricingError] = useState("")
   const [submitting, setSubmitting] = useState(false)
+  const [trackingCopied, setTrackingCopied] = useState(false)
   const [deliveryCities, setDeliveryCities] = useState<string[]>([])
   const [selectedCityOption, setSelectedCityOption] = useState("other")
   const [formData, setFormData] = useState({
@@ -47,6 +48,13 @@ export default function PaymentPage() {
       ...formData,
       city: value === "other" ? "" : value
     })
+  }
+
+  const copyTrackingId = async () => {
+    if (!trackingId) return
+    await navigator.clipboard.writeText(trackingId)
+    setTrackingCopied(true)
+    window.setTimeout(() => setTrackingCopied(false), 2000)
   }
 
   useEffect(() => {
@@ -113,7 +121,16 @@ export default function PaymentPage() {
           <h1 className="text-3xl font-bold">Order Confirmed!</h1>
           <p className="mt-4 text-neutral-600">Thank you for your order.</p>
           <p className="mt-6 text-sm text-neutral-500">Your Tracking ID</p>
-          <p className="mt-2 text-2xl font-bold tracking-wider">{trackingId}</p>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+            <p className="text-2xl font-bold tracking-wider">{trackingId}</p>
+            <button
+              type="button"
+              onClick={() => void copyTrackingId()}
+              className="rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 transition hover:border-black hover:text-black"
+            >
+              {trackingCopied ? "Copied" : "Copy"}
+            </button>
+          </div>
           <Link href={"/track"} className="inline-block mt-6 px-6 py-3 bg-black text-white rounded-lg">Track Your Order</Link>
         </div>
       </section>

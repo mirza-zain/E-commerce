@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   },
   description: "Explore premium fragrances from Zarb Official. Find a signature scent for every occasion.",
   applicationName: "Zarb Official",
+  icons: {
+    icon: [
+      { url: "/images/favicon/favicon.svg", type: "image/svg+xml" },
+      { url: "/images/favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+    ],
+    shortcut: "/images/favicon/favicon.ico",
+    apple: "/images/favicon/favicon-96x96.png",
+  },
   keywords: ["premium fragrances", "perfume", "Zarb Official", "fragrance shop"],
   alternates: {
     canonical: "/",
