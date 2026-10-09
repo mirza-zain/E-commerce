@@ -152,14 +152,27 @@ export async function POST(request: Request) {
                 if(prodResult.length === 0) throw new Error(`Product ${item.id} not found`)
                 
                 const product = prodResult[0]
-                const variant = typeof item.variantLabel === "string" && item.variantLabel.trim()
+                const hasVariants = Array.isArray(product.variants) && product.variants.length > 0
+                
+                let variant = typeof item.variantLabel === "string" && item.variantLabel.trim()
                     ? product.variants?.find((candidate) => candidate.label === item.variantLabel)
                     : undefined
-                if (item.variantLabel && !variant) throw new Error(`${product.name} variation not found`)
-                const availableStock = variant?.stock ?? Number(product.stock)
-                if(availableStock < item.quantity) throw new Error(`${product.name}${variant ? ` (${variant.label})` : ""} does not have enough stock`)
+
+                // If product has variants, but no specific variant was provided, fallback to the first variant
+                if (!variant && hasVariants) {
+                    variant = product.variants[0]
+                }
+
+                if (item.variantLabel && !variant) {
+                    throw new Error(`${product.name} variation "${item.variantLabel}" not found`)
+                }
+
+                const availableStock = variant ? Number(variant.stock) : Number(product.stock)
+                if (isNaN(availableStock) || availableStock < item.quantity) {
+                    throw new Error(`${product.name}${variant ? ` (${variant.label})` : ""} does not have enough stock`)
+                }
         
-                const price = variant?.price ?? Number(product.price)
+                const price = variant ? Number(variant.price) : Number(product.price)
     
                 subTotal += price * item.quantity
     
@@ -251,23 +264,60 @@ export async function POST(request: Request) {
             // Decrease Stock
             
             for(const item of verifiedItems) {
-                let updated
-                if (item.variantLabel) {
-                    const variantIndex = (await tx.select().from(products).where(eq(products.id, item.productId)))[0]?.variants
-                        ?.findIndex((candidate) => candidate.label === item.variantLabel) ?? -1
-                    if (variantIndex < 0) throw new Error("Product variation is no longer available")
-                    updated = await tx.update(products).set({
-                        variants: sql`jsonb_set(${products.variants}, ARRAY[${variantIndex}::text, 'stock'], to_jsonb(((${products.variants}->${variantIndex}->>'stock')::int - ${item.quantity})), false)`
-                    }).where(eq(products.id, item.productId)).returning({ id: products.id })
-                } else {
-                    updated = await tx
-                        .update(products)
-                        .set({ stock: sql`${products.stock} - ${item.quantity}` })
-                        .where(and(eq(products.id, item.productId), gte(products.stock, item.quantity)))
-                        .returning({ id: products.id })
+                const [currentProd] = await tx
+                    .select()
+                    .from(products)
+                    .where(eq(products.id, item.productId))
+
+                if (!currentProd) {
+                    throw new Error(`Product #${item.productId} not found`)
                 }
-    
-                if(updated.length === 0) throw new Error("Stock changed before the order could be completed")
+
+                if (item.variantLabel && Array.isArray(currentProd.variants) && currentProd.variants.length > 0) {
+                    const variantIndex = currentProd.variants.findIndex(
+                        (candidate) => candidate.label === item.variantLabel
+                    )
+
+                    if (variantIndex < 0) {
+                        throw new Error(`${currentProd.name} variation "${item.variantLabel}" is no longer available`)
+                    }
+
+                    const currentVarStock = Number(currentProd.variants[variantIndex].stock) || 0
+                    if (currentVarStock < item.quantity) {
+                        throw new Error(`${currentProd.name} (${item.variantLabel}) does not have enough stock`)
+                    }
+
+                    const updatedVariants = currentProd.variants.map((v, idx) => {
+                        if (idx === variantIndex) {
+                            return {
+                                ...v,
+                                stock: Math.max(0, currentVarStock - item.quantity)
+                            }
+                        }
+                        return v
+                    })
+
+                    const newTotalStock = updatedVariants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)
+
+                    await tx
+                        .update(products)
+                        .set({
+                            variants: updatedVariants,
+                            stock: String(newTotalStock)
+                        })
+                        .where(eq(products.id, item.productId))
+                } else {
+                    const currentStock = Number(currentProd.stock) || 0
+                    if (currentStock < item.quantity) {
+                        throw new Error(`${currentProd.name} does not have enough stock`)
+                    }
+
+                    const newStock = Math.max(0, currentStock - item.quantity)
+                    await tx
+                        .update(products)
+                        .set({ stock: String(newStock) })
+                        .where(eq(products.id, item.productId))
+                }
             }
     
             return newOrder[0]
@@ -287,13 +337,14 @@ export async function POST(request: Request) {
         return Response.json(result)
     } catch(error) {
         console.error("Order transaction failed:", error)
+        const errorMessage = (error as Error).message || "Unable to process order"
 
         return Response.json(
             {
-                error: "Unable to process order"
+                error: errorMessage
             },
             {
-                status: 500
+                status: 400
             }
         )
     }

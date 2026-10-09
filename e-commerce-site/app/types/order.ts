@@ -20,6 +20,8 @@ export type Order = {
     discountAmount: string,
     deliveryAmount: string,
     discountCode: string | null,
+    paymentMethod?: string,
+    paymentStatus?: string,
     status: string,
     createdAt: string,
     items: OrderItem[]

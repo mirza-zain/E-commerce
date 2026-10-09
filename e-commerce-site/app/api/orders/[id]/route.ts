@@ -170,15 +170,39 @@ export async function DELETE(request: Request, {params}: Props) {
 
     const deletedOrder = await db.transaction(async (tx) => {
         const items = await tx
-            .select({ productId: orderItems.productId, quantity: orderItems.quantity })
+            .select({ 
+                productId: orderItems.productId, 
+                quantity: orderItems.quantity,
+                variantLabel: orderItems.variantLabel
+            })
             .from(orderItems)
             .where(eq(orderItems.orderId, orderId))
 
         for (const item of items) {
-            await tx
-                .update(products)
-                .set({ stock: sql`${products.stock} + ${item.quantity}` })
-                .where(eq(products.id, item.productId))
+            const [prod] = await tx.select().from(products).where(eq(products.id, item.productId))
+            if (prod) {
+                if (item.variantLabel && Array.isArray(prod.variants) && prod.variants.length > 0) {
+                    const vIndex = prod.variants.findIndex(v => v.label === item.variantLabel)
+                    if (vIndex >= 0) {
+                        const updatedVariants = prod.variants.map((v, idx) => 
+                            idx === vIndex ? { ...v, stock: Number(v.stock) + item.quantity } : v
+                        )
+                        const newTotal = updatedVariants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)
+                        await tx.update(products).set({
+                            variants: updatedVariants,
+                            stock: String(newTotal)
+                        }).where(eq(products.id, item.productId))
+                    } else {
+                        await tx.update(products).set({
+                            stock: sql`${products.stock} + ${item.quantity}`
+                        }).where(eq(products.id, item.productId))
+                    }
+                } else {
+                    await tx.update(products).set({
+                        stock: sql`${products.stock} + ${item.quantity}`
+                    }).where(eq(products.id, item.productId))
+                }
+            }
         }
 
         await tx.delete(orderItems).where(eq(orderItems.orderId, orderId))

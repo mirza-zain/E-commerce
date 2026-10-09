@@ -24,12 +24,25 @@ export async function POST(request: Request) {
             verifiedIds.add(itemKey)
             const result = await db.select().from(products).where(eq(products.id, item.id))
             const product = result[0]
-            const variant = item.variantLabel
-                ? product?.variants?.find((candidate) => candidate.label === item.variantLabel)
+            if (!product) {
+                return Response.json({ error: `Product #${item.id} is unavailable` }, { status: 400 })
+            }
+
+            const hasVariants = Array.isArray(product.variants) && product.variants.length > 0
+            let variant = typeof item.variantLabel === "string" && item.variantLabel.trim()
+                ? product.variants?.find((candidate) => candidate.label === item.variantLabel)
                 : undefined
-            const availableStock = variant ? variant.stock : product?.stock
-            if (!product || !availableStock || Number(availableStock) < item.quantity) {
-                return Response.json({ error: "A product is unavailable" }, { status: 400 })
+
+            // Fallback to first variant if product has variants and no variant was specified
+            if (!variant && hasVariants) {
+                variant = product.variants[0]
+            }
+
+            const availableStock = variant ? Number(variant.stock) : Number(product.stock)
+            if (isNaN(availableStock) || availableStock < item.quantity) {
+                return Response.json({ 
+                    error: `${product.name}${variant ? ` (${variant.label})` : ""} is out of stock` 
+                }, { status: 400 })
             }
             subtotal += Number(variant?.price ?? product.price) * item.quantity
         }

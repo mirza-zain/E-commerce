@@ -4,6 +4,8 @@ import { Order } from "@/app/types/order";
 import { TrashIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import QuickRecordSaleButton from "../(component)/QuickRecordSaleButton";
+import { getOrderChannel, getChannelMeta } from "@/app/lib/order-utils";
 
 const statusClasses: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
@@ -87,8 +89,11 @@ export default function ManageOrders() {
             <p className="text-sm font-medium uppercase tracking-[0.28em]">Orders</p>
             <h1 className="mt-2 text-3xl font-bold md:text-4xl">Manage Orders</h1>
           </div>
-          <div className="w-fit rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700 shadow-sm">
-            {orders.length} total orders
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="w-fit rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700 shadow-sm">
+              {orders.length} total orders
+            </div>
+            <QuickRecordSaleButton />
           </div>
         </div>
 
@@ -120,7 +125,7 @@ export default function ManageOrders() {
             <table className="w-full min-w-3xl divide-y divide-neutral-200 text-left">
               <thead className="bg-neutral-100">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Orders</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Order & Channel</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Customer</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Total</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Status</th>
@@ -130,11 +135,24 @@ export default function ManageOrders() {
               </thead>
 
               <tbody className="divide-y divide-neutral-200">
-                {orders.map((order) => (
-                  <tr key={order.id} className="transition hover:bg-neutral-50">
-                    <td className="px-6 py-4 font-medium text-neutral-900">#{order.id}</td>
-                    <td className="px-6 py-4 text-neutral-700">{order.firstName} {order.lastName}</td>
-                    <td className="px-6 py-4 font-medium text-neutral-900">Rs. {order.totalAmount}</td>
+                {orders.map((order) => {
+                  const channel = getOrderChannel(order);
+                  const meta = getChannelMeta(channel);
+
+                  return (
+                    <tr key={order.id} className="transition hover:bg-neutral-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-neutral-900">#{order.id}</span>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${meta.bg}`}>
+                            <span>{meta.iconEmoji}</span>
+                            <span>{meta.label}</span>
+                          </span>
+                        </div>
+                        <p className="text-[10px] font-mono text-neutral-400 mt-0.5">{order.trackingId}</p>
+                      </td>
+                      <td className="px-6 py-4 text-neutral-700">{order.firstName} {order.lastName}</td>
+                      <td className="px-6 py-4 font-medium text-neutral-900">Rs. {order.totalAmount}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClasses[order.status] ?? "bg-neutral-100 text-neutral-700"}`}>
                         {order.status}
@@ -161,7 +179,8 @@ export default function ManageOrders() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                );
+              })}
               </tbody>
             </table>
           </div>
