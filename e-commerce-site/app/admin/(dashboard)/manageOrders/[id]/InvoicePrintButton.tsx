@@ -16,18 +16,48 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
     minute: "2-digit"
   });
 
+  const handlePrint = () => {
+    const originalTitle = typeof document !== "undefined" ? document.title : "";
+    if (typeof document !== "undefined") {
+      document.title = "";
+    }
+    window.print();
+    setTimeout(() => {
+      if (typeof document !== "undefined") {
+        document.title = originalTitle;
+      }
+    }, 500);
+  };
+
   return (
     <div className="space-y-6">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
             size: A4 portrait;
-            margin: 8mm;
+            margin: 0 !important;
           }
-          body {
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
             background-color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+          }
+          body * {
+            visibility: hidden;
+          }
+          #printable-shipping-invoice, #printable-shipping-invoice * {
+            visibility: visible;
+          }
+          #printable-shipping-invoice {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 10mm !important;
+            box-sizing: border-box !important;
           }
         }
       `}} />
@@ -45,7 +75,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
 
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={handlePrint}
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-black hover:bg-neutral-800 text-white text-sm font-semibold rounded-xl shadow-sm transition active:scale-[0.98]"
         >
           <PrinterIcon className="size-4" />
@@ -54,7 +84,10 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
       </div>
 
       {/* Printable Invoice Container */}
-      <div className="bg-white border border-neutral-300 rounded-2xl shadow-sm p-6 sm:p-10 max-w-4xl mx-auto print:border-0 print:p-0 print:shadow-none print:max-w-none print:w-full">
+      <div
+        id="printable-shipping-invoice"
+        className="bg-white border border-neutral-300 rounded-2xl shadow-sm p-6 sm:p-10 max-w-4xl mx-auto print:border-0 print:p-0 print:shadow-none print:max-w-none print:w-full"
+      >
         {/* Invoice Border Frame (Ideal for cutting or pasting on parcel) */}
         <div className="border-2 border-neutral-900 p-6 sm:p-8 space-y-6 text-neutral-900 print:p-6 print:border-2 print:border-black">
           
@@ -253,7 +286,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
                     <td className="py-2 px-3 border-r border-neutral-300 font-semibold text-neutral-900 print:border-black">
                       {item.productName}
                       <span className="block text-[10px] text-neutral-500 font-normal">
-                        Bottle / Perfume Oil
+                        {item.variantLabel ? `Size: ${item.variantLabel}` : "Bottle / Perfume Oil"}
                       </span>
                     </td>
                     <td className="py-2 px-3 border-r border-neutral-300 text-center font-bold print:border-black">

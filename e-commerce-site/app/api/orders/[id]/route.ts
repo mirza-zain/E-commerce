@@ -74,6 +74,7 @@ export async function GET(request: Request, {params}: Props) {
             .map(row => ({
                 productId: row.products!.id,
                 productName: row.products!.name,
+                variantLabel: row.order_items!.variantLabel,
                 quantity: row.order_items!.quantity,
                 price: row.order_items!.price
             }))

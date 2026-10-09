@@ -69,6 +69,7 @@ export default async function OrderDetails({ params }: Props) {
             .map((row) => ({
                 productId: row.products!.id,
                 productName: row.products!.name,
+                variantLabel: row.order_items!.variantLabel,
                 quantity: row.order_items!.quantity,
                 price: row.order_items!.price
             }))
@@ -114,9 +115,10 @@ export default async function OrderDetails({ params }: Props) {
                         <h2 className="text-xl font-semibold text-neutral-900">Items</h2>
                         <div className="mt-5 space-y-4">
                             {data.items.map((items) => (
-                                <div key={items.productId} className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+                                <div key={`${items.productId}-${items.variantLabel ?? ""}`} className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
                                     <div>
                                         <p className="font-medium text-neutral-900">{items.productName}</p>
+                                        {items.variantLabel && <p className="mt-1 text-sm text-neutral-500">Size: {items.variantLabel}</p>}
                                         <p className="mt-1 text-sm text-neutral-500">Quantity: {items.quantity}</p>
                                     </div>
                                     <p className="text-base font-semibold text-neutral-900">Rs. {items.price}</p>

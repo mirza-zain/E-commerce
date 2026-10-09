@@ -94,6 +94,7 @@ export default function CartPage() {
                 <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 truncate mt-0.5">
                   {item.name}
                 </h3>
+                {item.variantLabel && <p className="text-sm font-medium text-neutral-700 mt-1">Size: {item.variantLabel}</p>}
                 <p className="text-sm text-neutral-500 line-clamp-1 mt-1">
                   {item.description}
                 </p>
@@ -112,7 +113,7 @@ export default function CartPage() {
                   {/* Quantity Stepper */}
                   <div className="flex items-center border border-neutral-300 rounded-lg overflow-hidden bg-neutral-50">
                     <button
-                      onClick={() => decreaseQuantity(item.id)}
+                      onClick={() => decreaseQuantity(item.id, item.variantLabel)}
                       className="p-2 hover:bg-neutral-200 text-neutral-700 transition active:bg-neutral-300"
                       aria-label="Decrease quantity"
                     >
@@ -132,7 +133,7 @@ export default function CartPage() {
 
                   {/* Remove Button */}
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.id, item.variantLabel)}
                     className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                     title="Remove item"
                     aria-label="Remove item"
@@ -190,4 +191,3 @@ export default function CartPage() {
     </main>
   );
 }
-

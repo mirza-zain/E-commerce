@@ -13,6 +13,13 @@ type Products = {
   price: number,
   stock: number,
   image: string | null
+  variants?: ProductVariant[]
+}
+
+type ProductVariant = {
+  label: string
+  price: number
+  stock: number
 }
 
 type FormProps = {
@@ -29,7 +36,8 @@ export default function Form({ product, onProductSaved }: FormProps) {
     category: product?.category ?? "",
     price: product?.price ?? 0,
     stock: product?.stock ?? 0,
-    image: product?.image ?? ""
+    image: product?.image ?? "",
+    variants: product?.variants ?? []
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,6 +54,19 @@ export default function Form({ product, onProductSaved }: FormProps) {
     });
   }
 
+  function updateVariant(index: number, field: keyof ProductVariant, value: string) {
+    setServerError("");
+    setSuccessMessage("");
+    setFormData((currentData) => ({
+      ...currentData,
+      variants: currentData.variants.map((variant, variantIndex) =>
+        variantIndex === index
+          ? { ...variant, [field]: field === "label" ? value : Number(value) }
+          : variant
+      )
+    }));
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setServerError("");
@@ -56,6 +77,12 @@ export default function Form({ product, onProductSaved }: FormProps) {
     if (!formData.category) return setServerError("Please select a category.");
     if (formData.price <= 0) return setServerError("Price must be greater than 0.");
     if (formData.stock < 0) return setServerError("Stock cannot be negative.");
+    if (formData.variants.some((variant) => !variant.label.trim() || variant.price <= 0 || variant.stock < 0)) {
+      return setServerError("Each variation needs a label, a price greater than 0, and non-negative stock.");
+    }
+    if (new Set(formData.variants.map((variant) => variant.label.trim().toLowerCase())).size !== formData.variants.length) {
+      return setServerError("Variation labels must be unique.");
+    }
 
     try {
       setIsSubmitting(true);
@@ -88,7 +115,8 @@ export default function Form({ product, onProductSaved }: FormProps) {
           category: "",
           price: 0,
           stock: 0,
-          image: ""
+          image: "",
+          variants: []
         });
       }
 
@@ -210,6 +238,73 @@ export default function Form({ product, onProductSaved }: FormProps) {
             onChange={handleData} 
           />
         </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                Size Variations
+              </label>
+              <p className="mt-1 text-xs text-neutral-500">Optional. Add sizes such as 20 ml and 50 ml with their own price and stock.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFormData((currentData) => ({
+                ...currentData,
+                variants: [...currentData.variants, { label: "", price: 0, stock: 0 }]
+              }))}
+              className="rounded-lg border border-neutral-300 px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:border-black"
+            >
+              Add Size
+            </button>
+          </div>
+          <div className="space-y-3">
+            {formData.variants.map((variant, index) => (
+              <div key={index} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 items-end">
+                <div>
+                  <label className="mb-1 block text-xs text-neutral-500">Label</label>
+                  <input
+                    type="text"
+                    placeholder="20 ml"
+                    value={variant.label}
+                    onChange={(event) => updateVariant(index, "label", event.target.value)}
+                    className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-neutral-500">Price (PKR)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={variant.price || ""}
+                    onChange={(event) => updateVariant(index, "price", event.target.value)}
+                    className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-neutral-500">Stock</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={variant.stock || ""}
+                    onChange={(event) => updateVariant(index, "stock", event.target.value)}
+                    className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData((currentData) => ({
+                    ...currentData,
+                    variants: currentData.variants.filter((_, variantIndex) => variantIndex !== index)
+                  }))}
+                  className="mb-1 px-2 py-2 text-xs font-semibold text-red-600 hover:text-red-800"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
         
         {/* Product Image */}
         <div>
@@ -277,4 +372,3 @@ export default function Form({ product, onProductSaved }: FormProps) {
     </div>
   );
 }
-

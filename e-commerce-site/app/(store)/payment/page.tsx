@@ -14,6 +14,7 @@ type Pricing = {
 }
 
 type CheckoutField = "firstName" | "lastName" | "email" | "address" | "city" | "phoneNum"
+type PaymentMethod = "cod" | "online"
 type FieldErrors = Partial<Record<CheckoutField, string>>
 
 const namePattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
@@ -60,6 +61,7 @@ export default function PaymentPage() {
   const [trackingCopied, setTrackingCopied] = useState(false)
   const [deliveryCities, setDeliveryCities] = useState<string[]>([])
   const [selectedCityOption, setSelectedCityOption] = useState("other")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -80,6 +82,11 @@ export default function PaymentPage() {
       ...formData,
       [name] : nextValue
     })
+    if(name === "city") {
+      setPaymentMethod(
+        nextValue.trim().toLowerCase() === "karachi" ? "cod" : "online"
+      )
+    }
     if (name in formData && name !== "phoneCountryCode") {
       const field = name as CheckoutField
       setFieldErrors((currentErrors) => ({
@@ -103,6 +110,9 @@ export default function PaymentPage() {
       ...formData,
       city: value === "other" ? "" : value
     })
+    setPaymentMethod(
+      value.toLowerCase() === "karachi" ? "cod" : "online"
+    )
     setFieldErrors((currentErrors) => ({
       ...currentErrors,
       city: value === "other" ? "" : validateField("city", value)
@@ -171,7 +181,7 @@ export default function PaymentPage() {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ ...formData, discountCode, items: cart })
+        body: JSON.stringify({ ...formData, paymentMethod, discountCode, items: cart })
       })
       const data = await response.json()
       if(!response.ok) throw new Error(data.error ?? "Error Processing Order")
@@ -209,6 +219,7 @@ export default function PaymentPage() {
   }
 
   const subTotal = Number(pricing?.subtotal ?? 0)
+  const isKarachi = formData.city.trim().toLowerCase() === "karachi"
 
   return (
     <section className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
@@ -375,20 +386,54 @@ export default function PaymentPage() {
                 Payment Method
               </h2>
               <div className="space-y-3">
-                <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
-                  <input type="radio" name="payment" defaultChecked className="accent-black" />
-                  <div>
-                    <p className="font-medium text-neutral-900">Cash on Delivery (COD)</p>
-                    <p className="text-xs text-neutral-500">Pay cash upon parcel delivery</p>
-                  </div>
-                </label>
-                {/* <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
-                  <input type="radio" name="payment" className="accent-black" />
-                  <div>
-                    <p className="font-medium text-neutral-900">Credit / Debit Card</p>
-                    <p className="text-xs text-neutral-500">Pay securely via Visa / MasterCard</p>
-                  </div>
-                </label> */}
+                <div className="space-y-3">
+                  {isKarachi && (
+                    <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="cod"
+                        checked={paymentMethod === "cod"}
+                        onChange={() => setPaymentMethod("cod")}
+                        className="accent-black"
+                      />
+                      <div>
+                        <p className="font-medium text-neutral-900">
+                          Cash on Delivery (COD)
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          Pay cash upon parcel delivery
+                        </p>
+                      </div>
+                    </label>
+                  )}
+
+                  <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="online"
+                      checked={paymentMethod === "online"}
+                      onChange={() => setPaymentMethod("online")}
+                      className="accent-black"
+                    />
+                    <div>
+                      <p className="font-medium text-neutral-900">
+                        Online Payment
+                      </p>
+                      <p className="text-xs text-neutral-500">
+                        Pay securely online using Safepay
+                      </p>
+                    </div>
+                  </label>
+
+                  {!isKarachi && (
+                    <p className="text-sm text-neutral-600">
+                      Cash on Delivery is available only in Karachi.
+                      Online payment is required for other cities.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -422,6 +467,7 @@ export default function PaymentPage() {
                 <h3 className="font-semibold text-lg text-neutral-900 truncate">
                   Zarb Official {item.name}
                 </h3>
+                {item.variantLabel && <p className="text-sm font-medium text-neutral-700">Size: {item.variantLabel}</p>}
                 <p className="text-sm text-neutral-500">Qty: {item.quantity}</p>
                 <p className="text-base font-medium mt-1">Rs. {item.price * item.quantity}</p>
               </div>

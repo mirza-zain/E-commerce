@@ -50,6 +50,20 @@
       "when": 1791483290151,
       "tag": "0006_skinny_crusher_hogan",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791531332496,
+      "tag": "0007_equal_forge",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791538235000,
+      "tag": "0008_add_product_variants",
+      "breakpoints": true
     }
   ]
 }

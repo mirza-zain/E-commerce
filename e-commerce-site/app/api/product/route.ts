@@ -15,7 +15,8 @@ const getCatalogPage = unstable_cache(
                 category: products.category,
                 price: products.price,
                 stock: products.stock,
-                image: products.image
+                image: products.image,
+                variants: products.variants
             })
                 .from(products)
                 .where(categoryFilter)
@@ -64,7 +65,8 @@ export async function POST (request: Request) {
         category: body.category,
         price: body.price,
         stock: body.stock,
-        image: body.image
+        image: body.image,
+        variants: normalizeVariants(body.variants)
     })
     .returning()
 
@@ -79,6 +81,7 @@ function validateProduct(body: Record<string, unknown>) {
     const price = Number(body.price)
     const stock = Number(body.stock)
     const image = body.image
+    const variants = body.variants
 
     if (!name || name.length > 150) return "Product name is required and must be 150 characters or fewer"
     if (!description || description.length > 2000) return "Product description is required and must be 2000 characters or fewer"
@@ -86,8 +89,33 @@ function validateProduct(body: Record<string, unknown>) {
     if (!Number.isFinite(price) || price <= 0) return "Price must be greater than 0"
     if (!Number.isFinite(stock) || !Number.isInteger(stock) || stock < 0) return "Stock must be a non-negative whole number"
     if (image !== null && image !== "" && typeof image !== "string") return "Invalid product image"
+    if (variants !== undefined) {
+        if (!Array.isArray(variants) || variants.length > 20) return "Invalid product variations"
+        const labels = new Set<string>()
+        for (const variant of variants) {
+            if (!variant || typeof variant !== "object") return "Invalid product variation"
+            const candidate = variant as Record<string, unknown>
+            const label = typeof candidate.label === "string" ? candidate.label.trim() : ""
+            const variantPrice = Number(candidate.price)
+            const variantStock = Number(candidate.stock)
+            if (!label || label.length > 30 || !Number.isFinite(variantPrice) || variantPrice <= 0 ||
+                !Number.isFinite(variantStock) || !Number.isInteger(variantStock) || variantStock < 0) {
+                return "Each variation needs a valid label, price, and stock"
+            }
+            if (labels.has(label.toLowerCase())) return "Variation labels must be unique"
+            labels.add(label.toLowerCase())
+        }
+    }
 
     return null
+}
+
+function normalizeVariants(value: unknown) {
+    if (!Array.isArray(value)) return []
+    return value.map((variant) => {
+        const item = variant as { label: string, price: number, stock: number }
+        return { label: item.label.trim(), price: Number(item.price), stock: Number(item.stock) }
+    })
 }
 
 export async function GET(request: Request) {

@@ -16,6 +16,13 @@ type Product =  {
   category: string,
   price: number,
   stock: number
+  variants: ProductVariant[]
+}
+
+type ProductVariant = {
+  label: string
+  price: number
+  stock: number
 }
 
 export default function DetailProduct({id}: Props) {
@@ -23,6 +30,7 @@ export default function DetailProduct({id}: Props) {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(true)
     const {addToCart, cart} = useCart()
+    const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
 
     useEffect(() => {
         const getProd = async () => {
@@ -31,6 +39,7 @@ export default function DetailProduct({id}: Props) {
                 if(!response.ok) throw new Error("Product Not Found")
                 const items = await response.json()
                 setProdDetail(items[0])
+                setSelectedVariant(items[0].variants?.[0] ?? null)
 
             } catch(error) {
                 setError((error as Error).message)
@@ -46,7 +55,11 @@ export default function DetailProduct({id}: Props) {
     if (error) return <p>Error Loading...</p>
     if (!prodDetail) return <p>Product Not Found</p>
 
-    const selectedQuantity = cart.find(item => item.id === prodDetail.id)?.quantity ?? 0
+    const activePrice = selectedVariant?.price ?? Number(prodDetail.price)
+    const activeStock = selectedVariant?.stock ?? Number(prodDetail.stock)
+    const selectedQuantity = cart.find(item =>
+      item.id === prodDetail.id && item.variantLabel === selectedVariant?.label
+    )?.quantity ?? 0
  
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center py-10 sm:py-16 px-4 sm:px-8 lg:px-12">
@@ -77,18 +90,45 @@ export default function DetailProduct({id}: Props) {
             {prodDetail.description}
           </p>
           <p className="mt-6 text-2xl sm:text-3xl font-semibold text-neutral-900">
-            Rs {prodDetail.price}
+            Rs {activePrice}
           </p>
+
+          {prodDetail.variants?.length > 0 && (
+            <div className="mt-6 w-full max-w-md">
+              <p className="mb-2 text-sm font-semibold text-neutral-700">Choose Size</p>
+              <div className="flex flex-wrap gap-2">
+                {prodDetail.variants.map((variant) => (
+                  <button
+                    key={variant.label}
+                    type="button"
+                    onClick={() => setSelectedVariant(variant)}
+                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                      selectedVariant?.label === variant.label
+                        ? "border-black bg-black text-white"
+                        : "border-neutral-300 hover:border-black"
+                    }`}
+                  >
+                    {variant.label} - Rs {variant.price}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Action Button */}
           <div className="w-full max-w-md flex flex-col sm:flex-row items-center gap-4 mt-8">
             <button 
-              disabled={prodDetail.stock <= 0}
-              onClick={() => addToCart(prodDetail)} 
+              disabled={activeStock <= 0}
+              onClick={() => addToCart({
+                ...prodDetail,
+                price: activePrice,
+                stock: activeStock,
+                variantLabel: selectedVariant?.label
+              })}
               aria-label={selectedQuantity > 0 ? `${selectedQuantity} selected, add another ${prodDetail.name}` : `Add ${prodDetail.name} to cart`}
               className={`w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase rounded-lg border-2 transition-all duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${selectedQuantity > 0 ? "border-black bg-black text-white hover:bg-neutral-800" : "border-black bg-transparent text-black hover:bg-neutral-100"}`}  
             >
-              {prodDetail.stock > 0 ? (selectedQuantity > 0 ? `Added ${selectedQuantity}` : "Add to Cart") : "Out of Stock"}
+              {activeStock > 0 ? (selectedQuantity > 0 ? `Added ${selectedQuantity}` : "Add to Cart") : "Out of Stock"}
             </button>
           </div>
         </div>

@@ -13,19 +13,25 @@ export async function POST(request: Request) {
             return Response.json({ error: "Cart is empty" }, { status: 400 })
         }
 
-        const verifiedIds = new Set<number>()
+        const verifiedIds = new Set<string>()
         let subtotal = 0
         for (const item of body.items) {
-            if (!item || typeof item !== "object" || !Number.isInteger(item.id) || !Number.isInteger(item.quantity) || item.quantity <= 0 || verifiedIds.has(item.id)) {
+            if (!item || typeof item !== "object" || !Number.isInteger(item.id) || !Number.isInteger(item.quantity) || item.quantity <= 0) {
                 return Response.json({ error: "Invalid cart" }, { status: 400 })
             }
-            verifiedIds.add(item.id)
+            const itemKey = `${item.id}:${item.variantLabel ?? ""}`
+            if (verifiedIds.has(itemKey)) return Response.json({ error: "Invalid cart" }, { status: 400 })
+            verifiedIds.add(itemKey)
             const result = await db.select().from(products).where(eq(products.id, item.id))
             const product = result[0]
-            if (!product || Number(product.stock) < item.quantity) {
+            const variant = item.variantLabel
+                ? product?.variants?.find((candidate) => candidate.label === item.variantLabel)
+                : undefined
+            const availableStock = variant ? variant.stock : product?.stock
+            if (!product || !availableStock || Number(availableStock) < item.quantity) {
                 return Response.json({ error: "A product is unavailable" }, { status: 400 })
             }
-            subtotal += Number(product.price) * item.quantity
+            subtotal += Number(variant?.price ?? product.price) * item.quantity
         }
 
         const code = typeof body.discountCode === "string" ? body.discountCode.trim().toUpperCase() : ""

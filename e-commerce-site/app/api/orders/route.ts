@@ -22,7 +22,7 @@ export async function POST(request: Request) {
             )
         }
     
-        const productIds = body.items.map((item: { id: number }) => item?.id)
+        const productIds = body.items.map((item: { id: number, variantLabel?: string }) => `${item?.id}:${item?.variantLabel ?? ""}`)
     
         const uniqueProductIds = new Set(productIds)
     
@@ -152,17 +152,22 @@ export async function POST(request: Request) {
                 if(prodResult.length === 0) throw new Error(`Product ${item.id} not found`)
                 
                 const product = prodResult[0]
+                const variant = typeof item.variantLabel === "string" && item.variantLabel.trim()
+                    ? product.variants?.find((candidate) => candidate.label === item.variantLabel)
+                    : undefined
+                if (item.variantLabel && !variant) throw new Error(`${product.name} variation not found`)
+                const availableStock = variant?.stock ?? Number(product.stock)
+                if(availableStock < item.quantity) throw new Error(`${product.name}${variant ? ` (${variant.label})` : ""} does not have enough stock`)
         
-                if(Number(product.stock) < item.quantity) throw new Error(`${product.name} does not have enough stock`)
-        
-                const price = Number(product.price)
+                const price = variant?.price ?? Number(product.price)
     
                 subTotal += price * item.quantity
     
                 verifiedItems.push({
                     productId: product.id,
                     quantity: item.quantity,
-                    price: product.price
+                    price: price.toFixed(2),
+                    variantLabel: variant?.label ?? null
                 })
             }
     
@@ -229,7 +234,8 @@ export async function POST(request: Request) {
                     orderId,
                     productId: item.productId,
                     quantity: item.quantity,
-                    price: item.price
+                    price: item.price,
+                    variantLabel: item.variantLabel
                 }))
             )
 
@@ -243,18 +249,21 @@ export async function POST(request: Request) {
             // Decrease Stock
             
             for(const item of verifiedItems) {
-                const updated = await tx
-                    .update(products)
-                    .set({
-                        stock: sql`${products.stock} - ${item.quantity}`,
-                    })
-                    .where(
-                        and(
-                            eq(products.id, item.productId),
-                            gte(products.stock, item.quantity)
-                        )
-                    )
-                    .returning({ id: products.id })
+                let updated
+                if (item.variantLabel) {
+                    const variantIndex = (await tx.select().from(products).where(eq(products.id, item.productId)))[0]?.variants
+                        ?.findIndex((candidate) => candidate.label === item.variantLabel) ?? -1
+                    if (variantIndex < 0) throw new Error("Product variation is no longer available")
+                    updated = await tx.update(products).set({
+                        variants: sql`jsonb_set(${products.variants}, ARRAY[${variantIndex}::text, 'stock'], to_jsonb(((${products.variants}->${variantIndex}->>'stock')::int - ${item.quantity})), false)`
+                    }).where(eq(products.id, item.productId)).returning({ id: products.id })
+                } else {
+                    updated = await tx
+                        .update(products)
+                        .set({ stock: sql`${products.stock} - ${item.quantity}` })
+                        .where(and(eq(products.id, item.productId), gte(products.stock, item.quantity)))
+                        .returning({ id: products.id })
+                }
     
                 if(updated.length === 0) throw new Error("Stock changed before the order could be completed")
             }
@@ -321,6 +330,7 @@ export async function GET() {
             items: Array<{
                 productId: number
                 productName: string
+                variantLabel: string | null
                 quantity: number
                 price: string
             }>
@@ -346,6 +356,7 @@ export async function GET() {
                 existingOrder.items.push({
                     productId: product.id,
                     productName: product.name,
+                    variantLabel: item.variantLabel,
                     quantity: item.quantity,
                     price: item.price
                 })

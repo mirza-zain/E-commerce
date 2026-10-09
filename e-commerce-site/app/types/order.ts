@@ -1,6 +1,7 @@
 export type OrderItem = {
     productId: number,
     productName: string,
+    variantLabel: string | null,
     quantity: number,
     price: string
 }

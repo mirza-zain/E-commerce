@@ -1,5 +1,10 @@
-import { boolean, index ,integer, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index ,integer, jsonb, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
+export type ProductVariant = {
+    label: string
+    price: number
+    stock: number
+}
 
 export const products = pgTable("products", {
     id: serial("id").primaryKey(),
@@ -8,7 +13,8 @@ export const products = pgTable("products", {
     category: text("category").notNull(),
     price: numeric("price").notNull(),
     stock: numeric("stock").notNull(),
-    image: text("image")
+    image: text("image"),
+    variants: jsonb("variants").$type<ProductVariant[]>().notNull().default([])
 })
 
 export const orders = pgTable('orders', {
@@ -22,6 +28,8 @@ export const orders = pgTable('orders', {
     city: text("city").notNull(),
     totalAmount: numeric("totalAmount").notNull(),
     status: text("status").notNull(),
+    paymentMethod: text("paymentMethod").notNull().default("cod"),
+    paymentStatus: text("paymentStatus").notNull().default("unpaid"),
     subTotal: numeric("subTotal").notNull(),
     discountAmount: numeric("discountAmount").notNull(),
     deliveryAmount: numeric("deliveryAmount").notNull(),
@@ -53,7 +61,8 @@ export const orderItems = pgTable('order_items', {
     orderId: integer("orderId").notNull().references(() => orders.id),
     productId: integer("productId").notNull().references(() => products.id),
     quantity: integer("quantity").notNull(),
-    price: numeric("price").notNull()
+    price: numeric("price").notNull(),
+    variantLabel: text("variantLabel")
 })
 
 export const user = pgTable("user", {

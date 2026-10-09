@@ -12,6 +12,7 @@ type Product = {
     image: string | null,
     stock: number,
     category: string
+    variantLabel?: string
 }
 
 type CartItem = Product & {
@@ -21,8 +22,8 @@ type CartItem = Product & {
 type CartContextValue = {
     cart: CartItem[]
     addToCart: (product: Product) => void
-    decreaseQuantity: (id: number) => void
-    removeFromCart: (id: number) => void
+    decreaseQuantity: (id: number, variantLabel?: string) => void
+    removeFromCart: (id: number, variantLabel?: string) => void
     clearCart: () => void
 }
 
@@ -61,7 +62,7 @@ export function CartProvider({children}: { children: ReactNode }) {
     const addToCart = (product: Product) => {
         setCart((currentCart) => {
             const existingProduct = currentCart.find((item) => 
-                item.id === product.id)
+                item.id === product.id && item.variantLabel === product.variantLabel)
             
             if(product.stock <= 0) {
                 return currentCart
@@ -85,17 +86,17 @@ export function CartProvider({children}: { children: ReactNode }) {
             ]
         })
     }
-    const decreaseQuantity = (id: number) => {
+    const decreaseQuantity = (id: number, variantLabel?: string) => {
         setCart((currentCart) => {
-            return currentCart.map(item => item.id === id ?
+            return currentCart.map(item => item.id === id && item.variantLabel === variantLabel ?
                 {...item, quantity: item.quantity -1 } :
                 item
             )
             .filter((item) => item.quantity > 0)
         })
     }
-    const removeFromCart = (id:number) => {
-        setCart((currentCart) => currentCart.filter(item => item.id !== id))
+    const removeFromCart = (id: number, variantLabel?: string) => {
+        setCart((currentCart) => currentCart.filter(item => !(item.id === id && item.variantLabel === variantLabel)))
     }
   
     const clearCart = () => {

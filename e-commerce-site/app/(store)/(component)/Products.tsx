@@ -13,7 +13,8 @@ type Product = {
   image: string, 
   price: number,
   category: string, 
-  stock: number
+  stock: number,
+  variants: { label: string, price: number, stock: number }[]
 }
 
 type Props = {
@@ -103,11 +104,22 @@ if(loading) return <p>Loading.....</p>
                       <p className="text-base text-neutral-500 mt-3">Zarb Store ©</p>
                       <div className="flex flex-col justify-center items-center gap-2 mt-1">
                           <h3 className="text-xl sm:text-2xl font-medium text-center">Zarb Offical {items.name} Perfume</h3>
-                          <p className="text-lg sm:text-xl font-light">Rs {items.price}</p>
+                          <p className="text-lg sm:text-xl font-light">
+                            {items.variants?.length
+                              ? `From Rs ${Math.min(...items.variants.map((variant) => variant.price))}`
+                              : `Rs ${items.price}`}
+                          </p>
                       </div>
                     </Link>
                     <div className="flex flex-col gap-2 items-center mt-5 justify-center">
-                      {(() => {
+                      {items.variants?.length ? (
+                        <Link
+                          href={`/productDetail/${items.id}`}
+                          className="w-full py-4 text-base sm:text-lg font-medium flex items-center justify-center border-2 border-black rounded-md uppercase transition-all duration-150 hover:bg-neutral-100"
+                        >
+                          Choose Size
+                        </Link>
+                      ) : (() => {
                         const selectedQuantity = cart.find(item => item.id === items.id)?.quantity ?? 0
 
                         return (
