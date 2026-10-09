@@ -23,8 +23,9 @@ function validateProduct(body: Record<string, unknown>) {
     if (!name || name.length > 150) return "Product name is required and must be 150 characters or fewer"
     if (!description || description.length > 2000) return "Product description is required and must be 2000 characters or fewer"
     if (!["mens", "women", "unisex"].includes(category)) return "Invalid product category"
-    if (!Number.isFinite(price) || price <= 0) return "Price must be greater than 0"
-    if (!Number.isFinite(stock) || !Number.isInteger(stock) || stock < 0) return "Stock must be a non-negative whole number"
+    const hasVariants = Array.isArray(variants) && variants.length > 0
+    if (!hasVariants && (!Number.isFinite(price) || price <= 0)) return "Price must be greater than 0"
+    if (!hasVariants && (!Number.isFinite(stock) || !Number.isInteger(stock) || stock < 0)) return "Stock must be a non-negative whole number"
     if (image !== null && image !== "" && typeof image !== "string") return "Invalid product image"
     if (variants !== undefined) {
         if (!Array.isArray(variants) || variants.length > 20) return "Invalid product variations"
@@ -105,6 +106,8 @@ export async function PUT(request: Request, {params}: Props) {
     if (validationError) {
         return Response.json({ error: validationError }, { status: 400 })
     }
+    const normalizedVariants = normalizeVariants(body.variants)
+    const hasVariants = normalizedVariants.length > 0
     if(!Number.isInteger(prodId) || prodId <= 0) {
         return Response.json(
             {
@@ -121,8 +124,8 @@ export async function PUT(request: Request, {params}: Props) {
         name: body.name,
         description: body.description,
         category: body.category,
-        price: body.price,
-        stock: body.stock,
+        price: hasVariants ? Math.min(...normalizedVariants.map((variant) => variant.price)) : body.price,
+        stock: hasVariants ? normalizedVariants.reduce((total, variant) => total + variant.stock, 0) : body.stock,
         image: body.image,
         variants: normalizeVariants(body.variants)
     })

@@ -7,7 +7,7 @@ import Image from "next/image";
 
 type Products = {
   id: number,
-  name: string, 
+  name: string,
   description: string,
   category: string,
   price: number,
@@ -75,8 +75,8 @@ export default function Form({ product, onProductSaved }: FormProps) {
     if (!formData.name.trim()) return setServerError("Product name is required.");
     if (!formData.description.trim()) return setServerError("Product description is required.");
     if (!formData.category) return setServerError("Please select a category.");
-    if (formData.price <= 0) return setServerError("Price must be greater than 0.");
-    if (formData.stock < 0) return setServerError("Stock cannot be negative.");
+    if (formData.variants.length === 0 && formData.price <= 0) return setServerError("Price must be greater than 0.");
+    if (formData.variants.length === 0 && formData.stock < 0) return setServerError("Stock cannot be negative.");
     if (formData.variants.some((variant) => !variant.label.trim() || variant.price <= 0 || variant.stock < 0)) {
       return setServerError("Each variation needs a label, a price greater than 0, and non-negative stock.");
     }
@@ -86,8 +86,8 @@ export default function Form({ product, onProductSaved }: FormProps) {
 
     try {
       setIsSubmitting(true);
-      const url = isEditing 
-        ? `/api/productDetail/${product.id}` 
+      const url = isEditing
+        ? `/api/productDetail/${product.id}`
         : "/api/product";
 
       const method = isEditing ? "PUT" : "POST";
@@ -153,14 +153,14 @@ export default function Form({ product, onProductSaved }: FormProps) {
             <label htmlFor="prodName" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
               Product Name
             </label>
-            <input 
-              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition" 
-              type="text" 
-              name="name" 
-              id="prodName" 
-              placeholder="e.g. La Rose Divine" 
-              value={formData.name} 
-              onChange={handleData} 
+            <input
+              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition"
+              type="text"
+              name="name"
+              id="prodName"
+              placeholder="e.g. La Rose Divine"
+              value={formData.name}
+              onChange={handleData}
             />
           </div>
 
@@ -169,10 +169,10 @@ export default function Form({ product, onProductSaved }: FormProps) {
             <label htmlFor="prodCategory" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
               Category
             </label>
-            <select 
-              id="prodCategory" 
-              name="category" 
-              value={formData.category} 
+            <select
+              id="prodCategory"
+              name="category"
+              value={formData.category}
               onChange={handleData}
               className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition"
             >
@@ -184,43 +184,45 @@ export default function Form({ product, onProductSaved }: FormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Price */}
-          <div>
-            <label htmlFor="prodPrice" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
-              Price (PKR)
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-400 font-medium">
-                Rs.
-              </span>
-              <input 
-                className="w-full pl-12 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition" 
-                type="number" 
-                name="price" 
-                id="prodPrice" 
-                placeholder="2500" 
-                value={formData.price === 0 ? "" : formData.price} 
-                onChange={handleData} 
-              />
+        <div className={`grid grid-cols-1 ${formData.variants.length === 0 ? "sm:grid-cols-2" : ""} gap-6`}>
+          {/* Price is only used for products without size variations. */}
+          {formData.variants.length === 0 && (
+            <div>
+              <label htmlFor="prodPrice" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
+                Price (PKR)
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-400 font-medium">
+                  Rs.
+                </span>
+                <input
+                  className="w-full pl-12 pr-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition"
+                  type="number"
+                  name="price"
+                  id="prodPrice"
+                  placeholder="2500"
+                  value={formData.price === 0 ? "" : formData.price}
+                  onChange={handleData}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Stock */}
-          <div>
+          {/* Legacy stock is only used for products without size variations. */}
+          {formData.variants.length === 0 && <div>
             <label htmlFor="prodStock" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
               Stock Quantity
             </label>
-            <input 
-              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition" 
-              type="number" 
-              name="stock" 
-              id="prodStock" 
-              placeholder="10" 
-              value={formData.stock === 0 ? "" : formData.stock} 
-              onChange={handleData} 
+            <input
+              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition"
+              type="number"
+              name="stock"
+              id="prodStock"
+              placeholder="10"
+              value={formData.stock === 0 ? "" : formData.stock}
+              onChange={handleData}
             />
-          </div>
+          </div>}
         </div>
 
         {/* Description */}
@@ -228,14 +230,14 @@ export default function Form({ product, onProductSaved }: FormProps) {
           <label htmlFor="prodDes" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
             Description
           </label>
-          <textarea 
-            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition resize-none" 
-            name="description" 
-            id="prodDes" 
+          <textarea
+            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition resize-none"
+            name="description"
+            id="prodDes"
             rows={3}
-            placeholder="Describe scent notes, projection, and occasion..." 
-            value={formData.description} 
-            onChange={handleData} 
+            placeholder="Describe scent notes, projection, and occasion..."
+            value={formData.description}
+            onChange={handleData}
           />
         </div>
 
@@ -304,8 +306,13 @@ export default function Form({ product, onProductSaved }: FormProps) {
               </div>
             ))}
           </div>
+          {formData.variants.length > 0 && (
+            <p className="mt-3 text-xs text-neutral-500">
+              Price and stock are managed per size above.
+            </p>
+          )}
         </div>
-        
+
         {/* Product Image */}
         <div>
           <label htmlFor="image" className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-2">
@@ -338,7 +345,7 @@ export default function Form({ product, onProductSaved }: FormProps) {
                   {
                     formData.image && (
                       <div className="mt-4">
-                        <Image 
+                        <Image
                           src={formData.image}
                           alt={formData.name}
                           width={300}
@@ -356,8 +363,8 @@ export default function Form({ product, onProductSaved }: FormProps) {
 
         {/* Submit Button */}
         <div className="flex justify-end pt-2">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isSubmitting}
             className="px-6 py-3 bg-black hover:bg-neutral-800 disabled:opacity-50 text-white text-sm font-semibold uppercase tracking-wider rounded-xl transition active:scale-[0.99] flex items-center gap-2 shadow-sm"
           >
