@@ -117,7 +117,7 @@ if(loading) return <p>Loading.....</p>
                           href={`/productDetail/${items.id}`}
                           className="w-full py-4 text-base sm:text-lg font-medium flex items-center justify-center border-2 border-black rounded-md uppercase transition-all duration-150 hover:bg-neutral-100"
                         >
-                          Choose Size
+                          Choose Edition
                         </Link>
                       ) : (() => {
                         const selectedQuantity = cart.find(item => item.id === items.id)?.quantity ?? 0

@@ -95,7 +95,7 @@ export default function DetailProduct({id}: Props) {
 
           {prodDetail.variants?.length > 0 && (
             <div className="mt-6 w-full max-w-md">
-              <p className="mb-2 text-sm font-semibold text-neutral-700">Choose Size</p>
+              <p className="mb-2 text-sm font-semibold text-neutral-700">Choose Edition</p>
               <div className="flex flex-wrap gap-2">
                 {prodDetail.variants.map((variant) => (
                   <button
