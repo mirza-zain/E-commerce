@@ -13,12 +13,16 @@ export const metadata: Metadata = {
   applicationName: "Zarb Official",
   icons: {
     icon: [
+      { url: "/favicon.ico" },
       { url: "/images/favicon/favicon.svg", type: "image/svg+xml" },
       { url: "/images/favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
     ],
-    shortcut: "/images/favicon/favicon.ico",
-    apple: "/images/favicon/favicon-96x96.png",
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/images/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
+  manifest: "/images/favicon/site.webmanifest",
   keywords: ["premium fragrances", "perfume", "Zarb Official", "fragrance shop"],
   alternates: {
     canonical: "/",
