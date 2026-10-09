@@ -220,7 +220,9 @@ export async function POST(request: Request) {
                 subTotal: subTotal.toFixed(2),
                 discountAmount: discountAmount.toFixed(2),
                 deliveryAmount: deliveryAmount.toFixed(2),
-                discountCode: discountAmount > 0 ? discountCode : null
+                discountCode: discountAmount > 0 ? discountCode : null,
+                paymentMethod: "cod",
+                paymentStatus: "unpaid"
             })
             .returning()
         

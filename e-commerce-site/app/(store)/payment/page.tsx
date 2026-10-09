@@ -14,7 +14,7 @@ type Pricing = {
 }
 
 type CheckoutField = "firstName" | "lastName" | "email" | "address" | "city" | "phoneNum"
-type PaymentMethod = "cod" | "online"
+type PaymentMethod = "cod"
 type FieldErrors = Partial<Record<CheckoutField, string>>
 
 const namePattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
@@ -61,7 +61,7 @@ export default function PaymentPage() {
   const [trackingCopied, setTrackingCopied] = useState(false)
   const [deliveryCities, setDeliveryCities] = useState<string[]>([])
   const [selectedCityOption, setSelectedCityOption] = useState("other")
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod")
+  const paymentMethod: PaymentMethod = "cod"
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -82,11 +82,6 @@ export default function PaymentPage() {
       ...formData,
       [name] : nextValue
     })
-    if(name === "city") {
-      setPaymentMethod(
-        nextValue.trim().toLowerCase() === "karachi" ? "cod" : "online"
-      )
-    }
     if (name in formData && name !== "phoneCountryCode") {
       const field = name as CheckoutField
       setFieldErrors((currentErrors) => ({
@@ -110,9 +105,6 @@ export default function PaymentPage() {
       ...formData,
       city: value === "other" ? "" : value
     })
-    setPaymentMethod(
-      value.toLowerCase() === "karachi" ? "cod" : "online"
-    )
     setFieldErrors((currentErrors) => ({
       ...currentErrors,
       city: value === "other" ? "" : validateField("city", value)
@@ -219,8 +211,6 @@ export default function PaymentPage() {
   }
 
   const subTotal = Number(pricing?.subtotal ?? 0)
-  const isKarachi = formData.city.trim().toLowerCase() === "karachi"
-
   return (
     <section className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
       <div className="mb-8">
@@ -386,53 +376,11 @@ export default function PaymentPage() {
                 Payment Method
               </h2>
               <div className="space-y-3">
-                <div className="space-y-3">
-                  {isKarachi && (
-                    <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="cod"
-                        checked={paymentMethod === "cod"}
-                        onChange={() => setPaymentMethod("cod")}
-                        className="accent-black"
-                      />
-                      <div>
-                        <p className="font-medium text-neutral-900">
-                          Cash on Delivery (COD)
-                        </p>
-                        <p className="text-xs text-neutral-500">
-                          Pay cash upon parcel delivery
-                        </p>
-                      </div>
-                    </label>
-                  )}
-
-                  <label className="flex items-center gap-3 p-4 border border-neutral-300 rounded-lg cursor-pointer hover:bg-neutral-50 transition">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="online"
-                      checked={paymentMethod === "online"}
-                      onChange={() => setPaymentMethod("online")}
-                      className="accent-black"
-                    />
-                    <div>
-                      <p className="font-medium text-neutral-900">
-                        Online Payment
-                      </p>
-                      <p className="text-xs text-neutral-500">
-                        Pay securely online using Safepay
-                      </p>
-                    </div>
-                  </label>
-
-                  {!isKarachi && (
-                    <p className="text-sm text-neutral-600">
-                      Cash on Delivery is available only in Karachi.
-                      Online payment is required for other cities.
-                    </p>
-                  )}
+                <div className="rounded-lg border border-neutral-300 bg-neutral-50 p-4">
+                  <p className="font-medium text-neutral-900">Cash on Delivery (COD)</p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Pay cash when your parcel is delivered. Online payments will be enabled soon.
+                  </p>
                 </div>
               </div>
             </div>
