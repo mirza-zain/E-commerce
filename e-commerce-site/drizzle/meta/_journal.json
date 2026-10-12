@@ -71,6 +71,13 @@
       "when": 1791538667319,
       "tag": "0009_neat_dazzler",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791825081703,
+      "tag": "0010_pale_marauders",
+      "breakpoints": true
     }
   ]
 }

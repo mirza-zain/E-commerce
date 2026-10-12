@@ -120,6 +120,25 @@ export async function POST(request: Request) {
             }
         }
 
+        const country = typeof body.country === "string" && body.country.trim() ? body.country.trim() : "Pakistan"
+        const isKarachi = country.toLowerCase() === "pakistan" && body.phoneCountryCode === "+92" && body.city.trim().toLowerCase() === "karachi"
+        const paymentMethod = body.paymentMethod === "bank_transfer" ? "bank_transfer" : "cod"
+
+        if (paymentMethod === "cod" && !isKarachi) {
+            return Response.json(
+                { error: "Cash on Delivery (COD) is only available within Karachi, Pakistan. Please select Direct Bank Transfer." },
+                { status: 400 }
+            )
+        }
+
+        const paymentReceipt = typeof body.paymentReceipt === "string" ? body.paymentReceipt.trim() : ""
+        if (paymentMethod === "bank_transfer" && !paymentReceipt) {
+            return Response.json(
+                { error: "Please upload your payment screenshot/receipt before completing the order." },
+                { status: 400 }
+            )
+        }
+
         const result = await db.transaction(async (tx) => {
     
             const verifiedItems = []
@@ -228,14 +247,16 @@ export async function POST(request: Request) {
                 phoneNum: `${body.phoneCountryCode}${body.phoneNum}`,
                 address: body.address.trim(),
                 city: body.city.trim(),
+                country,
                 totalAmount: totalAmount.toFixed(2),
                 status: "pending",
                 subTotal: subTotal.toFixed(2),
                 discountAmount: discountAmount.toFixed(2),
                 deliveryAmount: deliveryAmount.toFixed(2),
                 discountCode: discountAmount > 0 ? discountCode : null,
-                paymentMethod: "cod",
-                paymentStatus: "unpaid"
+                paymentMethod,
+                paymentStatus: paymentMethod === "bank_transfer" ? "pending_verification" : "unpaid",
+                paymentReceipt: paymentMethod === "bank_transfer" ? paymentReceipt : null
             })
             .returning()
         

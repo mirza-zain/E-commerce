@@ -15,6 +15,7 @@ export type Order = {
     phoneNum: string,
     address: string,
     city: string,
+    country?: string,
     totalAmount: string,
     subTotal: string,
     discountAmount: string,
@@ -22,6 +23,7 @@ export type Order = {
     discountCode: string | null,
     paymentMethod?: string,
     paymentStatus?: string,
+    paymentReceipt?: string | null,
     status: string,
     createdAt: string,
     items: OrderItem[]

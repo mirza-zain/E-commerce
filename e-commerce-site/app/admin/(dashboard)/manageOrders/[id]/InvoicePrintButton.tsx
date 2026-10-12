@@ -16,6 +16,9 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
     minute: "2-digit"
   });
 
+  const isOnlinePayment = order.paymentMethod === "bank_transfer" || order.paymentMethod === "online" || order.paymentMethod === "Bank Transfer";
+  const isPaid = order.paymentStatus === "paid";
+
   const handlePrint = () => {
     const originalTitle = typeof document !== "undefined" ? document.title : "";
     if (typeof document !== "undefined") {
@@ -196,7 +199,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
               </p>
 
               <p className="text-xs font-black uppercase text-black pt-1">
-                City: <span className="underline">{order.city}</span>, Pakistan
+                City: <span className="underline">{order.city}</span>, {order.country || "Pakistan"}
               </p>
             </div>
 
@@ -232,29 +235,59 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
             </div>
           </div>
 
-          {/* 4. Payment / COD Collection Box (CRITICAL FOR PARCELS!) */}
-          <div className="border-2 border-dashed border-neutral-900 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50 print:bg-white print:border-black">
-            <div>
-              <span className="text-xs font-black uppercase tracking-widest text-neutral-600">
-                Payment Method
-              </span>
-              <p className="text-base font-extrabold text-neutral-900">
-                CASH ON DELIVERY (COD)
-              </p>
-              <p className="text-[11px] text-neutral-500">
-                Collect exact amount in cash before handing over parcel
-              </p>
-            </div>
+          {/* 4. Payment / Collection Box (CRITICAL FOR PARCELS!) */}
+          {isOnlinePayment ? (
+            <div className="border-2 border-dashed border-emerald-800 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-emerald-50/50 print:bg-white print:border-black">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-emerald-800 print:text-black">
+                  Payment Method
+                </span>
+                <p className="text-base font-extrabold text-emerald-950 print:text-black">
+                  ONLINE PAYMENT / BANK TRANSFER
+                </p>
+                <p className="text-[11px] font-bold text-emerald-800 print:text-black">
+                  {isPaid
+                    ? "✓ PAID IN ADVANCE / VERIFIED — DO NOT COLLECT CASH FROM CUSTOMER"
+                    : "✓ PREPAID PAYMENT PROOF ATTACHED — DO NOT COLLECT CASH ON DELIVERY"}
+                </p>
+              </div>
 
-            <div className="text-left sm:text-right border-t sm:border-t-0 sm:border-l sm:pl-6 border-neutral-300 pt-2 sm:pt-0">
-              <span className="text-xs font-black uppercase tracking-wider text-neutral-700">
-                Amount To Collect
-              </span>
-              <p className="text-2xl sm:text-3xl font-black text-black">
-                Rs. {order.totalAmount}
-              </p>
+              <div className="text-left sm:text-right border-t sm:border-t-0 sm:border-l sm:pl-6 border-emerald-300 print:border-black pt-2 sm:pt-0">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-800 print:text-black">
+                  Amount To Collect
+                </span>
+                <p className="text-2xl sm:text-3xl font-black text-emerald-900 print:text-black">
+                  Rs. 0.00
+                </p>
+                <p className="text-[10px] text-neutral-500 font-semibold print:text-black">
+                  (PREPAID • Order Total: Rs. {order.totalAmount})
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="border-2 border-dashed border-neutral-900 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50 print:bg-white print:border-black">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-neutral-600 print:text-black">
+                  Payment Method
+                </span>
+                <p className="text-base font-extrabold text-neutral-900 print:text-black">
+                  CASH ON DELIVERY (COD)
+                </p>
+                <p className="text-[11px] text-neutral-500 print:text-black">
+                  Collect exact amount in cash before handing over parcel
+                </p>
+              </div>
+
+              <div className="text-left sm:text-right border-t sm:border-t-0 sm:border-l sm:pl-6 border-neutral-300 print:border-black pt-2 sm:pt-0">
+                <span className="text-xs font-black uppercase tracking-wider text-neutral-700 print:text-black">
+                  Amount To Collect
+                </span>
+                <p className="text-2xl sm:text-3xl font-black text-black">
+                  Rs. {order.totalAmount}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* 5. Itemized Package Contents Table */}
           <div>
@@ -328,7 +361,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
                 </div>
               )}
               <div className="flex justify-between border-t-2 border-neutral-900 pt-2 text-sm font-black text-black">
-                <span>NET TOTAL DUE:</span>
+                <span>{isOnlinePayment ? (isPaid ? "TOTAL VALUE (PAID ONLINE):" : "TOTAL ORDER VALUE:") : "NET TOTAL DUE (COD):"}</span>
                 <span className="font-mono text-base">Rs. {order.totalAmount}</span>
               </div>
             </div>

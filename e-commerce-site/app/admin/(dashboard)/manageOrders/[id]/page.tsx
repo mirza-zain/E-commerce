@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { Order } from "@/app/types/order";
 import StatusControl from "./StatusControl";
+import PaymentVerificationCard from "./PaymentVerificationCard";
 import { db } from "@/app/lib/db";
 import { orders, orderItems, products } from "@/app/db/schema";
 import { eq } from "drizzle-orm";
@@ -110,6 +111,16 @@ export default async function OrderDetails({ params }: Props) {
                     </div>
                 </div>
 
+                <div className="print:hidden">
+                    <PaymentVerificationCard
+                        orderId={data.id}
+                        totalAmount={data.totalAmount}
+                        paymentMethod={data.paymentMethod}
+                        initialPaymentStatus={data.paymentStatus}
+                        paymentReceipt={data.paymentReceipt}
+                    />
+                </div>
+
                 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] print:hidden">
                     <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm">
                         <h2 className="text-xl font-semibold text-neutral-900">Items</h2>
@@ -139,8 +150,11 @@ export default async function OrderDetails({ params }: Props) {
                                 <p className="mt-1 text-neutral-900">{data.phoneNum}</p>
                             </div>
                             <div>
-                                <p className="text-neutral-500">Address</p>
+                                <p className="text-neutral-500">Destination Address</p>
                                 <p className="mt-1 text-neutral-900">{data.address}</p>
+                                <p className="mt-0.5 text-xs font-semibold text-neutral-700">
+                                    {data.city}, {data.country || "Pakistan"}
+                                </p>
                             </div>
                         </div>
                     </div>

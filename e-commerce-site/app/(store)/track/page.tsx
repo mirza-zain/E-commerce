@@ -5,6 +5,8 @@ import React, { useState } from "react";
 type TrackedOrder = {
     trackingId: string
     status: string
+    paymentMethod?: string
+    paymentStatus?: string
     totalAmount: string
     createdAt: string
 }
@@ -92,8 +94,35 @@ export default function TrackOrder() {
                                 <span className="font-medium">
                                     Status:
                                 </span>{" "}
-                                {order.status}
+                                <span className="capitalize">{order.status}</span>
                             </p>
+                            {order.paymentMethod && (
+                                <p>
+                                    <span className="font-medium">
+                                        Payment:
+                                    </span>{" "}
+                                    {order.paymentMethod === "bank_transfer" ? "Bank Transfer" : "Cash on Delivery"}
+                                    {order.paymentStatus && (
+                                        <span className={`ml-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                            order.paymentStatus === "paid"
+                                                ? "bg-emerald-100 text-emerald-800"
+                                                : order.paymentStatus === "pending_verification"
+                                                ? "bg-amber-100 text-amber-800"
+                                                : order.paymentStatus === "rejected"
+                                                ? "bg-rose-100 text-rose-800"
+                                                : "bg-neutral-100 text-neutral-700"
+                                        }`}>
+                                            {order.paymentStatus === "pending_verification"
+                                                ? "Verification Pending"
+                                                : order.paymentStatus === "paid"
+                                                ? "Payment Verified"
+                                                : order.paymentStatus === "rejected"
+                                                ? "Payment Declined"
+                                                : order.paymentStatus}
+                                        </span>
+                                    )}
+                                </p>
+                            )}
                             <p>
                                 <span className="font-medium">
                                     Total:

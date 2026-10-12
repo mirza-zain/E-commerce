@@ -97,7 +97,13 @@ export default function ManageOrders() {
           </div>
         </div>
 
-        <div className="mb-6 grid gap-4 md:grid-cols-3">
+        <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-amber-300/80 bg-amber-50/60 p-5 shadow-sm">
+            <p className="text-sm font-medium text-amber-900">Needs Verification</p>
+            <p className="mt-2 text-2xl font-bold text-amber-700">
+              {orders.filter((order) => order.paymentMethod === "bank_transfer" && order.paymentStatus === "pending_verification").length}
+            </p>
+          </div>
           <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-neutral-600">Pending</p>
             <p className="mt-2 text-2xl font-bold text-amber-700">
@@ -127,7 +133,7 @@ export default function ManageOrders() {
                 <tr>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Order & Channel</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Customer</th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Total</th>
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Payment & Total</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Status</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Date</th>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-600">Action</th>
@@ -152,7 +158,33 @@ export default function ManageOrders() {
                         <p className="text-[10px] font-mono text-neutral-400 mt-0.5">{order.trackingId}</p>
                       </td>
                       <td className="px-6 py-4 text-neutral-700">{order.firstName} {order.lastName}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900">Rs. {order.totalAmount}</td>
+                      <td className="px-6 py-4">
+                        <span className="font-medium text-neutral-900">Rs. {order.totalAmount}</span>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider">
+                            {order.paymentMethod === "bank_transfer" ? "Bank Transfer" : "COD"}
+                          </span>
+                          {order.paymentMethod === "bank_transfer" && (
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                              order.paymentStatus === "paid"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : order.paymentStatus === "pending_verification"
+                                ? "bg-amber-100 text-amber-800 ring-1 ring-amber-300"
+                                : order.paymentStatus === "rejected"
+                                ? "bg-rose-100 text-rose-800"
+                                : "bg-neutral-100 text-neutral-700"
+                            }`}>
+                              {order.paymentStatus === "pending_verification"
+                                ? "Verify Proof"
+                                : order.paymentStatus === "paid"
+                                ? "Paid"
+                                : order.paymentStatus === "rejected"
+                                ? "Declined"
+                                : order.paymentStatus}
+                            </span>
+                          )}
+                        </div>
+                      </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClasses[order.status] ?? "bg-neutral-100 text-neutral-700"}`}>
                         {order.status}

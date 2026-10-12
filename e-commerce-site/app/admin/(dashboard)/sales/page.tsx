@@ -588,8 +588,8 @@ export default function MonthlySalesPage() {
                           <p className="text-sm font-black text-neutral-900">
                             Rs. {Number(order.totalAmount).toLocaleString()}
                           </p>
-                          <p className="text-[10px] text-neutral-500 mt-0.5 capitalize">
-                            {order.paymentMethod || "COD"}
+                          <p className="text-[10px] text-neutral-500 mt-0.5">
+                            {order.paymentMethod === "bank_transfer" ? "Bank Transfer" : (order.paymentMethod || "COD")}
                             {order.paymentStatus === "paid" && (
                               <span className="text-emerald-700 font-bold ml-1">• Paid</span>
                             )}

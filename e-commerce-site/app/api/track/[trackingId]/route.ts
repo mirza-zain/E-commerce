@@ -18,6 +18,8 @@ export async function GET(request: Request, {params}: Props) {
         .select({
             trackingId: orders.trackingId,
             status: orders.status,
+            paymentMethod: orders.paymentMethod,
+            paymentStatus: orders.paymentStatus,
             createdAt: orders.createdAt,
             totalAmount: orders.totalAmount
         })

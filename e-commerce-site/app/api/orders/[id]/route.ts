@@ -104,30 +104,51 @@ export async function PUT(request: Request, {params}: Props) {
 
     const body = await request.json()
 
-    const allowdStatus = [
-        "pending",
-        "processing",
-        "shipped",
-        "delivered",
-        "cancelled"
-    ]
+    const updates: Partial<{ status: string; paymentStatus: string }> = {}
 
-    if(!allowdStatus.includes(body.status)) {
+    if (body.status !== undefined) {
+        const allowedStatus = [
+            "pending",
+            "processing",
+            "shipped",
+            "delivered",
+            "cancelled"
+        ]
+        if (!allowedStatus.includes(body.status)) {
+            return Response.json(
+                { error: "Invalid order status" },
+                { status: 400 }
+            )
+        }
+        updates.status = body.status
+    }
+
+    if (body.paymentStatus !== undefined) {
+        const allowedPaymentStatus = [
+            "unpaid",
+            "pending_verification",
+            "paid",
+            "rejected"
+        ]
+        if (!allowedPaymentStatus.includes(body.paymentStatus)) {
+            return Response.json(
+                { error: "Invalid payment status" },
+                { status: 400 }
+            )
+        }
+        updates.paymentStatus = body.paymentStatus
+    }
+
+    if (Object.keys(updates).length === 0) {
         return Response.json(
-            {
-                error: "Invalid order status"
-            },
-            {
-                status: 400
-            }
+            { error: "No valid fields to update" },
+            { status: 400 }
         )
     }
 
     const changeStatus = await db 
         .update(orders)
-        .set({
-            status: body.status
-        })
+        .set(updates)
         .where(eq(orders.id, orderId))
         .returning()
 
