@@ -615,10 +615,31 @@ export default function PaymentPage() {
                       </h4>
                       <div className="space-y-3">
                         {BANK_TRANSFER_CONFIG.accounts.map((acc, index) => (
-                          <div key={index} className="rounded-xl border border-neutral-200 bg-neutral-50/70 p-3.5 text-sm space-y-1.5">
-                            <div className="flex items-center justify-between">
-                              <span className="font-semibold text-neutral-900">{acc.bankName}</span>
-                              {acc.notes && <span className="text-[11px] text-neutral-500">{acc.notes}</span>}
+                          <div key={index} className="rounded-xl border border-neutral-200 bg-neutral-50/70 p-4 text-sm space-y-2">
+                            <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-neutral-200">
+                              <div className="flex items-center gap-3">
+                                {acc.logo && (
+                                  <div className="relative size-12 shrink-0 bg-white rounded-xl p-1 border border-neutral-200 shadow-xs overflow-hidden">
+                                    <Image
+                                      src={acc.logo}
+                                      alt={acc.bankName}
+                                      fill
+                                      className="object-contain p-0.5"
+                                    />
+                                  </div>
+                                )}
+                                <div>
+                                  <span className="font-bold text-neutral-900 text-base leading-tight block">{acc.bankName}</span>
+                                  {acc.branchName && (
+                                    <span className="text-xs text-neutral-500 block mt-0.5">{acc.branchName}</span>
+                                  )}
+                                </div>
+                              </div>
+                              {acc.notes && (
+                                <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full hidden sm:inline-block">
+                                  {acc.notes}
+                                </span>
+                              )}
                             </div>
                             <div className="text-xs text-neutral-600">
                               <span>Account Title: </span>

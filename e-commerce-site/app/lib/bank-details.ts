@@ -5,6 +5,7 @@ export type BankAccountDetail = {
   iban?: string;
   branchName?: string;
   raastId?: string;
+  logo?: string;
   notes?: string;
 };
 
@@ -32,6 +33,7 @@ export const BANK_TRANSFER_CONFIG: BankTransferConfig = {
       iban: process.env.NEXT_PUBLIC_BANK_IBAN || "PK05MSHQ0000089200209864",
       branchName: process.env.NEXT_PUBLIC_BANK_BRANCH || "Main Branch",
       raastId: process.env.NEXT_PUBLIC_BANK_RAAST_ID || "",
+      logo: "/images/Mashreq-Bank-Logo.png",
       notes: "Instant transfer via Raast, 1Link, or Banking App"
     }
   ]
