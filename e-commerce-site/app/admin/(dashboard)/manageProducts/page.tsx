@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Form from "../(component)/Form";
+import FeaturedProductsManager from "../(component)/FeaturedProductsManager";
 import { 
   PencilSimpleIcon, 
   TrashIcon, 
   MagnifyingGlassIcon,
   PackageIcon,
-  WarningCircleIcon
+  WarningCircleIcon,
+  StarIcon
 } from "@phosphor-icons/react";
 import Link from "next/link";
 
@@ -23,6 +25,7 @@ type Product = {
 
 export default function ManageProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
+  const [featuredProductIds, setFeaturedProductIds] = useState<number[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
@@ -31,7 +34,7 @@ export default function ManageProductsPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const response = await fetch(`https://zarbofficial.vercel.app/api/productDetail/${id}`, {
+      const response = await fetch(`/api/productDetail/${id}`, {
         method: "DELETE"
       });
 
@@ -41,6 +44,7 @@ export default function ManageProductsPage() {
       }
 
       setProducts((currentProducts) => currentProducts.filter((product) => product.id !== id));
+      setFeaturedProductIds((currentIds) => currentIds.filter((fid) => fid !== id));
     } catch {
       alert('Error deleting product');
     }
@@ -88,6 +92,12 @@ export default function ManageProductsPage() {
           </div>
         </div>
       </div>
+
+      {/* Featured Showcase Manager */}
+      <FeaturedProductsManager
+        allProducts={products}
+        onFeaturedUpdated={(ids) => setFeaturedProductIds(ids)}
+      />
 
       {/* Add Product Form Section */}
       <div className="space-y-4">
@@ -169,8 +179,16 @@ export default function ManageProductsPage() {
                         #{item.id}
                       </td>
                       <td className="py-4 px-6">
-                        <div className="font-semibold text-neutral-900">
-                          {item.name}
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-neutral-900">
+                            {item.name}
+                          </span>
+                          {featuredProductIds.includes(item.id) && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
+                              <StarIcon className="size-3 text-amber-600" weight="fill" />
+                              <span>Featured (Slot {featuredProductIds.indexOf(item.id) + 1})</span>
+                            </span>
+                          )}
                         </div>
                         <div className="text-xs text-neutral-400 max-w-xs truncate mt-0.5">
                           {item.description}

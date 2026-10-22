@@ -17,6 +17,16 @@ export const products = pgTable("products", {
     variants: jsonb("variants").$type<ProductVariant[]>().notNull().default([])
 })
 
+export const featuredProducts = pgTable("featured_products", {
+    id: serial("id").primaryKey(),
+    productId: integer("productId")
+        .notNull()
+        .references(() => products.id, { onDelete: "cascade" })
+        .unique(),
+    position: integer("position").notNull().default(1),
+    createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull()
+})
+
 export const orders = pgTable('orders', {
     id: serial("id").primaryKey(),
     trackingId: text("trackingId").notNull().unique(),

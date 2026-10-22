@@ -5,7 +5,7 @@ import InstallAdminButton from "./(component)/InstallAdminButton"
 import NotificationToggle from "./(component)/NotificationToggle"
 import QuickRecordSaleButton from "./(component)/QuickRecordSaleButton"
 import Link from "next/link"
-import { ArrowRightIcon, ChartBarIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowRightIcon, ChartBarIcon, StarIcon } from "@phosphor-icons/react/dist/ssr"
 
 export default async function page() {
    const now = new Date();
@@ -62,6 +62,13 @@ export default async function page() {
                         <h1 className="font-[Gebuk] text-4xl tracking-tight sm:text-5xl">Dashboard</h1>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <Link
+                            href="/admin/manageProducts"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs sm:text-sm font-semibold rounded-xl border border-neutral-200 shadow-2xs transition active:scale-[0.98]"
+                        >
+                            <StarIcon className="size-4 text-amber-600" weight="fill" />
+                            <span>Featured Showcase</span>
+                        </Link>
                         <QuickRecordSaleButton />
                     </div>
                 </div>
