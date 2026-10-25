@@ -81,10 +81,10 @@ export default function DetailProduct({id}: Props) {
         {/* Product Details */}
         <div className="w-full lg:w-1/2 flex flex-col items-center text-center lg:items-start lg:text-left">
           <span className="text-xs sm:text-sm uppercase tracking-widest text-neutral-500 font-medium">
-            Zarb Official ©
+            Zarb Store ©
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mt-3 text-neutral-900 leading-tight">
-            Zarb Official {prodDetail.name}
+            {prodDetail.name}
           </h1>
           <p className="mt-4 text-sm sm:text-base text-neutral-600 leading-relaxed max-w-xl text-center lg:text-left">
             {prodDetail.description}

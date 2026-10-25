@@ -2,7 +2,7 @@ self.addEventListener("push", (event) => {
   const data = event.data ? event.data.json() : {}
 
   event.waitUntil(
-    self.registration.showNotification(data.title || "Zarb Official", {
+    self.registration.showNotification(data.title || "Zarb Store", {
       body: data.body || "You have a new admin update.",
       icon: "/images/logo.png",
       badge: "/images/logo.png",

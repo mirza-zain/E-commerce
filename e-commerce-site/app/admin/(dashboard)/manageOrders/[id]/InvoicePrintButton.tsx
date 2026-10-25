@@ -100,7 +100,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
               <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
                 <Image
                   src="/images/logo.png"
-                  alt="Zarb Official"
+                  alt="Zarb Store"
                   fill
                   className="object-contain"
                   priority
@@ -108,7 +108,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-[Gebuk] uppercase">
-                  Zarb Official
+                  Zarb Store
                 </h1>
                 <p className="text-xs font-semibold uppercase tracking-widest text-neutral-600">
                   Luxury Perfume House • Pakistan
@@ -215,7 +215,7 @@ export default function InvoicePrintButton({ order }: { order: Order }) {
               </div>
 
               <p className="text-sm font-bold text-neutral-900">
-                Zarb Official
+                Zarb Store
               </p>
 
               <p className="text-xs text-neutral-700">

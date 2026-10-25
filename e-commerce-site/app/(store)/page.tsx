@@ -61,7 +61,7 @@ export default function Home() {
               height={520} 
               priority 
               className="aspect-square w-4/5 max-w-md rounded-full border-2 border-neutral-200 object-cover shadow-lg sm:w-3/5 lg:w-4/5" 
-              alt="Zarb Official luxury perfume bottle" 
+              alt="Zarb Store luxury perfume bottle" 
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function Home() {
         <div className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-2xl bg-neutral-100 shadow-sm sm:rounded-3xl" style={{ aspectRatio: "728 / 90" }}>
           <Image
             src="/images/promo-strip-1456x180@2x.png"
-            alt="Zarb Official promotion"
+            alt="Zarb Store promotion"
             fill
             sizes="(max-width: 728px) 100vw, 728px"
             className="object-cover"

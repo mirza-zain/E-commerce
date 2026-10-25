@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
     title: "Admin Dashboard",
-    description: "Zarb Official store administration dashboard.",
+    description: "Zarb Store administration dashboard.",
     manifest: "/admin/manifest.webmanifest",
     robots: {
         index: false,

@@ -122,7 +122,7 @@ export default function FeaturedProducts() {
                   </div>
 
                   <p className="text-xs text-neutral-400 uppercase tracking-widest mt-4 text-center">
-                    Zarb Official ©
+                    Zarb Store ©
                   </p>
 
                   <div className="flex flex-col justify-center items-center gap-1 mt-1 text-center">

@@ -90,7 +90,7 @@ export default function CartPage() {
 
               {/* Product Info */}
               <div className="flex-1 text-center sm:text-left min-w-0">
-                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium">Zarb Official</p>
+                <p className="text-xs uppercase tracking-wider text-neutral-400 font-medium">Zarb Store</p>
                 <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 truncate mt-0.5">
                   {item.name}
                 </h3>

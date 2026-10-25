@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: "Zarb Official Admin",
+        name: "Zarb Store Admin",
         short_name: "Zarb Admin",
-        description: "Zarb Official store administration",
+        description: "Zarb Store administration",
         start_url: "/admin",
         id: "/admin",
         scope: "/admin",

@@ -6,11 +6,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
-    default: "Zarb Official | Premium Fragrances",
-    template: "%s | Zarb Official",
+    default: "Zarb Store | Premium Fragrances",
+    template: "%s | Zarb Store",
   },
-  description: "Explore premium fragrances from Zarb Official. Find a signature scent for every occasion.",
-  applicationName: "Zarb Official",
+  description: "Explore premium fragrances from Zarb Store. Find a signature scent for every occasion.",
+  applicationName: "Zarb Store",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -23,29 +23,29 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/images/favicon/site.webmanifest",
-  keywords: ["premium fragrances", "perfume", "Zarb Official", "fragrance shop"],
+  keywords: ["premium fragrances", "perfume", "Zarb Store", "fragrance shop"],
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
-    siteName: "Zarb Official",
-    title: "Zarb Official | Premium Fragrances",
-    description: "Explore premium fragrances from Zarb Official. Find a signature scent for every occasion.",
+    siteName: "Zarb Store",
+    title: "Zarb Store | Premium Fragrances",
+    description: "Explore premium fragrances from Zarb Store. Find a signature scent for every occasion.",
     url: "/",
     images: [
       {
         url: "/images/icon2.png",
         width: 1200,
         height: 1200,
-        alt: "Zarb Official premium fragrance",
+        alt: "Zarb Store premium fragrance",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zarb Official | Premium Fragrances",
-    description: "Explore premium fragrances from Zarb Official.",
+    title: "Zarb Store | Premium Fragrances",
+    description: "Explore premium fragrances from Zarb Store.",
     images: ["/images/icon2.png"],
   },
   robots: {

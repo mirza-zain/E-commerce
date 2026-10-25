@@ -11,8 +11,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 items-start">
           {/* Brand Info */}
           <div className="text-center md:text-left flex flex-col items-center md:items-start">
-            <Link href="/" className="relative block h-16 w-56 overflow-hidden" aria-label="Zarb Official home">
-              <Image src="/images/logo.png" alt="Zarb Official" fill className="object-cover object-center invert" />
+            <Link href="/" className="relative block h-16 w-56 overflow-hidden" aria-label="Zarb Store home">
+              <Image src="/images/logo.png" alt="Zarb Store" fill className="object-cover object-center invert" />
             </Link>
             <p className="text-neutral-400 mt-3 text-sm sm:text-base max-w-sm">
               Crafting premium, long-lasting fragrances engineered for elegance and confidence.
@@ -64,7 +64,7 @@ export default function Footer() {
 
         {/* Bottom Copyright Bar */}
         <div className="border-t border-neutral-800 mt-12 pt-8 text-center text-xs sm:text-sm text-neutral-500 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p>© {new Date().getFullYear()} Zarb Official. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Zarb Store. All rights reserved.</p>
           <p className="font-light">Designed for elegance & quality.</p>
         </div>
       </div>

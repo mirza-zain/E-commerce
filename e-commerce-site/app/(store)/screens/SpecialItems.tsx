@@ -22,7 +22,7 @@ const editions: SignatureEdition[] = [
     tagline: "A luminous, opulent floral masterpiece inspired by J'adore",
     notes: "Damascena Rose • Sambac Jasmine • Ylang-Ylang",
     image: "/images/featurev1.png",
-    alt: "Zarb Official La Rose Divine Perfume",
+    alt: "Zarb Store La Rose Divine Perfume",
   },
   {
     id: "executive",
@@ -32,7 +32,7 @@ const editions: SignatureEdition[] = [
     tagline: "A power-packed, professional scent made to dominate the room",
     notes: "Crisp Bergamot • Smoked Cedarwood • Rich Amber",
     image: "/images/featurev2.png",
-    alt: "Zarb Official Executive Perfume",
+    alt: "Zarb Store Executive Perfume",
   },
   {
     id: "sea-mist",
@@ -42,7 +42,7 @@ const editions: SignatureEdition[] = [
     tagline: "A fresh, watery fragrance inspired by Victoria's Secret Aqua Kiss",
     notes: "Cool Waters • Rain-Kissed Freesia • Sheer Musk",
     image: "/images/featurev3.png",
-    alt: "Zarb Official Sea Mist Perfume",
+    alt: "Zarb Store Sea Mist Perfume",
   },
 ];
 

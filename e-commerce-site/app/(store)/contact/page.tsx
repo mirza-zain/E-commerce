@@ -31,7 +31,7 @@ export default function ContactPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-20 sm:py-28 lg:py-36">
         <div className="max-w-3xl">
           <p className="text-sm uppercase tracking-[0.28em] text-neutral-500 font-medium">
-            Zarb Official support
+            Zarb Store support
           </p>
           <h1 className="mt-5 text-5xl sm:text-6xl lg:text-8xl font-semibold tracking-tight leading-[0.95] text-neutral-900">
             Contact Us
@@ -62,7 +62,7 @@ export default function ContactPage() {
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">Follow us</p>
               <p className="mt-4 max-w-sm text-2xl sm:text-3xl leading-tight text-neutral-900">
-                Stay close to the world of Zarb Official.
+                Stay close to the world of Zarb Store.
               </p>
             </div>
 

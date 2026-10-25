@@ -7,7 +7,7 @@ import ScrollToTop from "./(component)/ScrollToTop";
 
 export const metadata: Metadata = {
     title: "Shop Premium Fragrances",
-    description: "Shop premium fragrances from Zarb Official and discover your next signature scent.",
+    description: "Shop premium fragrances from Zarb Store and discover your next signature scent.",
 }
 
 export default function StoreLayout({children} : {children: React.ReactNode}) {

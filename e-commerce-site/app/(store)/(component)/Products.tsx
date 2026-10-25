@@ -103,7 +103,7 @@ if(loading) return <p>Loading.....</p>
                       </div>
                       <p className="text-base text-neutral-500 mt-3">Zarb Store ©</p>
                       <div className="flex flex-col justify-center items-center gap-2 mt-1">
-                          <h3 className="text-xl sm:text-2xl font-medium text-center">Zarb Offical {items.name} Perfume</h3>
+                          <h3 className="text-xl sm:text-2xl font-medium text-center">{items.name}</h3>
                           <p className="text-lg sm:text-xl font-light">
                             {items.variants?.length
                               ? `From Rs ${Math.min(...items.variants.map((variant) => variant.price))}`

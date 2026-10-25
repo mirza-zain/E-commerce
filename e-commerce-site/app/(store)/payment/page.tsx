@@ -797,7 +797,7 @@ export default function PaymentPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-lg text-neutral-900 truncate">
-                  Zarb Official {item.name}
+                  Zarb Store {item.name}
                 </h3>
                 {item.variantLabel && <p className="text-sm font-medium text-neutral-700">Size: {item.variantLabel}</p>}
                 <p className="text-sm text-neutral-500">Qty: {item.quantity}</p>
