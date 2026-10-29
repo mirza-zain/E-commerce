@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || "G-SNVQD16RRY";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
@@ -60,6 +63,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`h-full antialiased`}>
       <body className="min-h-full flex flex-col font-[batica] bg-[#FAf8F5]">
+          {GA_MEASUREMENT_ID && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+                strategy="afterInteractive"
+              />
+              <Script id="google-analytics" strategy="afterInteractive">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_MEASUREMENT_ID}', {
+                    page_path: window.location.pathname,
+                  });
+                `}
+              </Script>
+            </>
+          )}
           {children}
           <Analytics />
           <SpeedInsights />
