@@ -4,6 +4,7 @@ import { CartProvider } from "./context/CartContext";
 import Navbar from "./(component)/Navbar";
 import Footer from "./(component)/Footer";
 import ScrollToTop from "./(component)/ScrollToTop";
+import PromoPopup from "./(component)/PromoPopup";
 
 export const metadata: Metadata = {
     title: "Shop Premium Fragrances",
@@ -18,6 +19,7 @@ export default function StoreLayout({children} : {children: React.ReactNode}) {
                 {children}
                 <Footer />
                 <ScrollToTop />
+                <PromoPopup />
             </CartProvider>
         </div>
     )

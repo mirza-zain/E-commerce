@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeftIcon, SquaresFourIcon, PackageIcon, ReceiptIcon, TagIcon, ChartBarIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, SquaresFourIcon, PackageIcon, ReceiptIcon, TagIcon, ChartBarIcon, MegaphoneIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,6 +13,7 @@ export default function Navbar() {
     { href: "/admin/manageOrders", label: "Manage Orders", icon: ReceiptIcon, exact: false },
     { href: "/admin/manageProducts", label: "Manage Products", icon: PackageIcon, exact: false },
     { href: "/admin/pricing", label: "Pricing Rules", icon: TagIcon, exact: false },
+    { href: "/admin/promo", label: "Promo Popup", icon: MegaphoneIcon, exact: false },
   ];
 
   return (

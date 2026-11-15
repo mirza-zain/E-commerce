@@ -165,3 +165,11 @@ export const verification = pgTable(
         index("verification_identifier_idx").on(table.identifier),
     ]
 )
+
+export const sitePromo = pgTable("site_promo", {
+    id: serial("id").primaryKey(),
+    imageUrl: text("image_url").notNull(),
+    linkUrl: text("link_url"),
+    isActive: boolean("is_active").notNull().default(true),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+})
