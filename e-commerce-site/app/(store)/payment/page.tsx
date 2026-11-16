@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BANK_TRANSFER_CONFIG } from "@/app/lib/bank-details";
+import { trackMetaEvent } from "@/app/lib/meta-pixel-events";
 
 type Pricing = {
   subtotal: string
@@ -68,6 +69,8 @@ export default function PaymentPage() {
   const [receiptError, setReceiptError] = useState("")
   const [copiedBankField, setCopiedBankField] = useState<string | null>(null)
   const [submittedPaymentMethod, setSubmittedPaymentMethod] = useState<PaymentMethod>("cod")
+  const [purchaseValue, setPurchaseValue] = useState<number | null>(null)
+  const purchaseTracked = useRef(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -83,6 +86,10 @@ export default function PaymentPage() {
     formData.country.trim().toLowerCase() === "pakistan" &&
     formData.phoneCountryCode === "+92" &&
     formData.city.trim().toLowerCase() === "karachi"
+
+  useEffect(() => {
+    trackMetaEvent("InitiateCheckout")
+  }, [])
 
   useEffect(() => {
     if (!isKarachi && paymentMethod === "cod") {
@@ -261,6 +268,7 @@ export default function PaymentPage() {
 
     setSubmitting(true)
     try {
+      const finalValue = Number(pricing?.totalAmount ?? subTotal)
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
@@ -275,6 +283,7 @@ export default function PaymentPage() {
       const data = await response.json()
       if(!response.ok) throw new Error(data.error ?? "Error Processing Order")
       setSubmittedPaymentMethod(paymentMethod)
+      setPurchaseValue(Number.isFinite(finalValue) ? finalValue : 0)
       setTrackingId(data.trackingId)
       clearCart()
     } catch (error) {
@@ -284,6 +293,15 @@ export default function PaymentPage() {
     }
 
   }
+
+  useEffect(() => {
+    if (!trackingId || purchaseTracked.current || purchaseValue === null) return
+    purchaseTracked.current = true
+    trackMetaEvent("Purchase", {
+      value: purchaseValue,
+      currency: "PKR",
+    })
+  }, [trackingId, purchaseValue])
 
   if(trackingId) {
     return (

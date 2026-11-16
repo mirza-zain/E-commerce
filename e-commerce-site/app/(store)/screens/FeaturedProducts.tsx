@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, ShoppingBagIcon, SparkleIcon } from "@phosphor-icons/react";
 import { useCart } from "../context/CartContext";
+import { trackMetaEvent } from "@/app/lib/meta-pixel-events";
 
 type ProductVariant = {
   label: string;
@@ -146,7 +147,16 @@ export default function FeaturedProducts() {
                   ) : (
                     <button
                       disabled={Number(item.stock) <= 0}
-                      onClick={() => addToCart(item)}
+                      onClick={() => {
+                        addToCart(item)
+                        trackMetaEvent("AddToCart", {
+                          content_ids: [String(item.id)],
+                          content_name: item.name,
+                          content_type: "product",
+                          value: Number(item.price),
+                          currency: "PKR",
+                        })
+                      }}
                       aria-label={selectedQuantity > 0 ? `${selectedQuantity} selected, add another ${item.name}` : `Add ${item.name} to cart`}
                       className={`w-full py-3.5 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 border-2 rounded-xl uppercase transition-all duration-150 active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-black disabled:cursor-not-allowed disabled:opacity-50 ${
                         selectedQuantity > 0

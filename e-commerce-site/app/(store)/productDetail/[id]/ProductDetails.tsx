@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useCart } from "../../context/CartContext";
+import { trackMetaEvent } from "@/app/lib/meta-pixel-events";
 
 type Props = {
   id: string
@@ -50,6 +51,20 @@ export default function DetailProduct({id}: Props) {
         getProd()
         
     }, [id])
+
+    useEffect(() => {
+        if (!prodDetail) return
+        const value = prodDetail.variants?.length
+            ? Number(prodDetail.variants[0].price)
+            : Number(prodDetail.price)
+        trackMetaEvent("ViewContent", {
+            content_ids: [String(prodDetail.id)],
+            content_name: prodDetail.name,
+            content_type: "product",
+            value,
+            currency: "PKR",
+        })
+    }, [prodDetail])
 
     if (loading) return <p>Loading....</p>
     if (error) return <p>Error Loading...</p>
@@ -119,12 +134,21 @@ export default function DetailProduct({id}: Props) {
           <div className="w-full max-w-md flex flex-col sm:flex-row items-center gap-4 mt-8">
             <button 
               disabled={activeStock <= 0}
-              onClick={() => addToCart({
-                ...prodDetail,
-                price: activePrice,
-                stock: activeStock,
-                variantLabel: selectedVariant?.label
-              })}
+              onClick={() => {
+                addToCart({
+                  ...prodDetail,
+                  price: activePrice,
+                  stock: activeStock,
+                  variantLabel: selectedVariant?.label
+                })
+                trackMetaEvent("AddToCart", {
+                  content_ids: [String(prodDetail.id)],
+                  content_name: prodDetail.name,
+                  content_type: "product",
+                  value: Number(activePrice),
+                  currency: "PKR",
+                })
+              }}
               aria-label={selectedQuantity > 0 ? `${selectedQuantity} selected, add another ${prodDetail.name}` : `Add ${prodDetail.name} to cart`}
               className={`w-full sm:w-1/2 py-4 px-6 text-base sm:text-lg font-semibold uppercase rounded-lg border-2 transition-all duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${selectedQuantity > 0 ? "border-black bg-black text-white hover:bg-neutral-800" : "border-black bg-transparent text-black hover:bg-neutral-100"}`}  
             >
