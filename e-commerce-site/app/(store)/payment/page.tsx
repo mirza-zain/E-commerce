@@ -70,6 +70,7 @@ export default function PaymentPage() {
   const [copiedBankField, setCopiedBankField] = useState<string | null>(null)
   const [submittedPaymentMethod, setSubmittedPaymentMethod] = useState<PaymentMethod>("cod")
   const [purchaseValue, setPurchaseValue] = useState<number | null>(null)
+  const [purchaseEventId, setPurchaseEventId] = useState<string | null>(null)
   const purchaseTracked = useRef(false)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -269,6 +270,9 @@ export default function PaymentPage() {
     setSubmitting(true)
     try {
       const finalValue = Number(pricing?.totalAmount ?? subTotal)
+      const eventId = typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `purchase-${Date.now()}-${Math.random().toString(16).slice(2)}`
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
@@ -277,13 +281,16 @@ export default function PaymentPage() {
           paymentMethod,
           paymentReceipt: paymentMethod === "bank_transfer" ? paymentReceipt : undefined,
           discountCode,
-          items: cart
+          items: cart,
+          eventId,
+          eventSourceUrl: typeof window !== "undefined" ? window.location.href : undefined
         })
       })
       const data = await response.json()
       if(!response.ok) throw new Error(data.error ?? "Error Processing Order")
       setSubmittedPaymentMethod(paymentMethod)
       setPurchaseValue(Number.isFinite(finalValue) ? finalValue : 0)
+      setPurchaseEventId(eventId)
       setTrackingId(data.trackingId)
       clearCart()
     } catch (error) {
@@ -300,8 +307,8 @@ export default function PaymentPage() {
     trackMetaEvent("Purchase", {
       value: purchaseValue,
       currency: "PKR",
-    })
-  }, [trackingId, purchaseValue])
+    }, purchaseEventId ?? undefined)
+  }, [trackingId, purchaseValue, purchaseEventId])
 
   if(trackingId) {
     return (

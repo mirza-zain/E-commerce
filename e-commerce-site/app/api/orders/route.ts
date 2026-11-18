@@ -6,6 +6,7 @@ import { calculateDiscount } from "@/app/lib/pricing";
 import { sendNewOrderNotification } from "@/app/lib/push";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
+import { buildHashedUserData, getRequestUserData, sendMetaCapiEvent } from "@/app/lib/meta-capi";
 
 export async function POST(request: Request) {
     try {
@@ -138,6 +139,11 @@ export async function POST(request: Request) {
                 { status: 400 }
             )
         }
+
+        const eventId = typeof body.eventId === "string" && body.eventId.trim() ? body.eventId.trim() : undefined
+        const eventSourceUrl = typeof body.eventSourceUrl === "string" && body.eventSourceUrl.trim()
+            ? body.eventSourceUrl.trim()
+            : request.headers.get("referer") ?? undefined
 
         const result = await db.transaction(async (tx) => {
     
@@ -353,6 +359,32 @@ export async function POST(request: Request) {
             })
         } catch (error) {
             console.error("Order notification failed:", error)
+        }
+
+        try {
+            const requestUserData = getRequestUserData(request)
+            const hashedUserData = buildHashedUserData({
+                email: result.email,
+                phone: result.phoneNum,
+            })
+
+            await sendMetaCapiEvent({
+                eventName: "Purchase",
+                eventId,
+                eventSourceUrl,
+                userData: {
+                    ...requestUserData,
+                    ...hashedUserData,
+                },
+                customData: {
+                    value: Number(result.totalAmount),
+                    currency: "PKR",
+                    order_id: String(result.id),
+                    content_type: "product",
+                },
+            })
+        } catch (error) {
+            console.error("Meta CAPI Purchase send failed:", error)
         }
     
         return Response.json(result)
