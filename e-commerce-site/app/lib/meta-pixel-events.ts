@@ -8,7 +8,12 @@ declare global {
 
 type EventParams = Record<string, unknown>;
 
-export function trackMetaEvent(eventName: string, params?: EventParams, eventId?: string) {
+export function trackMetaEvent(
+  eventName: string,
+  params?: EventParams,
+  eventId?: string,
+  sendToServer = true,
+) {
   if (typeof window === "undefined") return;
 
   const resolvedEventId =
@@ -25,15 +30,17 @@ export function trackMetaEvent(eventName: string, params?: EventParams, eventId?
     }
   }
 
-  void fetch("/api/meta/events", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      eventName,
-      eventId: resolvedEventId,
-      eventSourceUrl: window.location.href,
-      customData: params,
-    }),
-    keepalive: true,
-  }).catch(() => undefined);
+  if (sendToServer) {
+    void fetch("/api/meta/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventName,
+        eventId: resolvedEventId,
+        eventSourceUrl: window.location.href,
+        customData: params,
+      }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }
 }

@@ -307,7 +307,7 @@ export default function PaymentPage() {
     trackMetaEvent("Purchase", {
       value: purchaseValue,
       currency: "PKR",
-    }, purchaseEventId ?? undefined)
+    }, purchaseEventId ?? undefined, false)
   }, [trackingId, purchaseValue, purchaseEventId])
 
   if(trackingId) {
