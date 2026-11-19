@@ -73,17 +73,27 @@ function getCookieValue(cookieHeader: string | null, name: string) {
   return undefined;
 }
 
-export function getRequestUserData(request: Request): CapiUserData {
+export function getRequestUserData(request: Request, eventSourceUrl?: string): CapiUserData {
   const forwarded = request.headers.get("x-forwarded-for");
   const ip = forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || undefined;
   const ua = request.headers.get("user-agent") || undefined;
   const cookieHeader = request.headers.get("cookie");
+  let fbc = getCookieValue(cookieHeader, "_fbc");
+
+  if (!fbc && eventSourceUrl) {
+    try {
+      const fbclid = new URL(eventSourceUrl).searchParams.get("fbclid");
+      if (fbclid) fbc = `fb.1.${Math.floor(Date.now() / 1000)}.${fbclid}`;
+    } catch {
+      fbc = undefined;
+    }
+  }
 
   return {
     client_ip_address: ip,
     client_user_agent: ua,
     fbp: getCookieValue(cookieHeader, "_fbp"),
-    fbc: getCookieValue(cookieHeader, "_fbc"),
+    fbc,
   };
 }
 

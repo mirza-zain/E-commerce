@@ -13,6 +13,11 @@ export function trackMetaEvent(
   params?: EventParams,
   eventId?: string,
   sendToServer = true,
+  customerData?: {
+    email?: string;
+    phone?: string;
+    externalId?: string;
+  },
 ) {
   if (typeof window === "undefined") return;
 
@@ -39,6 +44,7 @@ export function trackMetaEvent(
         eventId: resolvedEventId,
         eventSourceUrl: window.location.href,
         customData: params,
+        customerData,
       }),
       keepalive: true,
     }).catch(() => undefined);

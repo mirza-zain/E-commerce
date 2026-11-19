@@ -89,10 +89,6 @@ export default function PaymentPage() {
     formData.city.trim().toLowerCase() === "karachi"
 
   useEffect(() => {
-    trackMetaEvent("InitiateCheckout")
-  }, [])
-
-  useEffect(() => {
     if (!isKarachi && paymentMethod === "cod") {
       setPaymentMethod("bank_transfer")
     }
@@ -266,6 +262,21 @@ export default function PaymentPage() {
       setReceiptError("Please upload your payment screenshot/receipt before completing the order.")
       return
     }
+
+    trackMetaEvent(
+      "InitiateCheckout",
+      {
+        value: Number(pricing?.totalAmount ?? subTotal),
+        currency: "PKR",
+        num_items: cart.length,
+      },
+      undefined,
+      true,
+      {
+        email: formData.email,
+        phone: `${formData.phoneCountryCode}${formData.phoneNum}`,
+      },
+    )
 
     setSubmitting(true)
     try {

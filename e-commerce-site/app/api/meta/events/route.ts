@@ -1,4 +1,8 @@
-import { getRequestUserData, sendMetaCapiEvent } from "@/app/lib/meta-capi";
+import {
+  buildHashedUserData,
+  getRequestUserData,
+  sendMetaCapiEvent,
+} from "@/app/lib/meta-capi";
 
 const allowedEvents = new Set([
   "PageView",
@@ -31,12 +35,27 @@ export async function POST(request: Request) {
     body.customData && typeof body.customData === "object" && !Array.isArray(body.customData)
       ? body.customData
       : undefined;
+  const customerData =
+    body.customerData && typeof body.customerData === "object" && !Array.isArray(body.customerData)
+      ? body.customerData
+      : undefined;
+  const hashedCustomerData =
+    customerData
+      ? buildHashedUserData({
+          email: typeof customerData.email === "string" ? customerData.email : undefined,
+          phone: typeof customerData.phone === "string" ? customerData.phone : undefined,
+          externalId: typeof customerData.externalId === "string" ? customerData.externalId : undefined,
+        })
+      : {};
 
   const result = await sendMetaCapiEvent({
     eventName,
     eventId,
     eventSourceUrl,
-    userData: getRequestUserData(request),
+    userData: {
+      ...getRequestUserData(request, eventSourceUrl),
+      ...hashedCustomerData,
+    },
     customData,
   });
 
