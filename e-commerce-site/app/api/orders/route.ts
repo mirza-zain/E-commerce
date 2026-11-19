@@ -362,10 +362,11 @@ export async function POST(request: Request) {
         }
 
         try {
-            const requestUserData = getRequestUserData(request)
+            const requestUserData = getRequestUserData(request, eventSourceUrl)
             const hashedUserData = buildHashedUserData({
                 email: result.email,
                 phone: result.phoneNum,
+                externalId: result.trackingId,
             })
 
             await sendMetaCapiEvent({
