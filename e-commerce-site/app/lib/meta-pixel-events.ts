@@ -9,14 +9,31 @@ declare global {
 type EventParams = Record<string, unknown>;
 
 export function trackMetaEvent(eventName: string, params?: EventParams, eventId?: string) {
-  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
-  if (eventId) {
-    window.fbq("track", eventName, params ?? {}, { eventID: eventId });
-    return;
+  if (typeof window === "undefined") return;
+
+  const resolvedEventId =
+    eventId ||
+    (typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${eventName}-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+
+  if (typeof window.fbq === "function") {
+    if (params) {
+      window.fbq("track", eventName, params, { eventID: resolvedEventId });
+    } else {
+      window.fbq("track", eventName, {}, { eventID: resolvedEventId });
+    }
   }
-  if (params) {
-    window.fbq("track", eventName, params);
-  } else {
-    window.fbq("track", eventName);
-  }
+
+  void fetch("/api/meta/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      eventName,
+      eventId: resolvedEventId,
+      eventSourceUrl: window.location.href,
+      customData: params,
+    }),
+    keepalive: true,
+  }).catch(() => undefined);
 }
