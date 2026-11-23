@@ -8,6 +8,12 @@ declare global {
 
 type EventParams = Record<string, unknown>;
 
+export function createMetaEventId(eventName: string) {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${eventName}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function trackMetaEvent(
   eventName: string,
   params?: EventParams,
@@ -21,11 +27,7 @@ export function trackMetaEvent(
 ) {
   if (typeof window === "undefined") return;
 
-  const resolvedEventId =
-    eventId ||
-    (typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${eventName}-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const resolvedEventId = eventId || createMetaEventId(eventName);
 
   if (typeof window.fbq === "function") {
     if (params) {
