@@ -2,22 +2,22 @@ import { StarIcon } from "@phosphor-icons/react/dist/ssr";
 
 const reviews = [
   {
-    quote: "Oud Maracuja has the kind of dry-down people ask about. It opens bright, then settles into something warm and quietly luxurious. Two sprays lasted through dinner and the drive home.",
+    quote: "Oud Maracuja surprised me in the best way. It starts off bright and fruity, then dries down into this warm, rich scent that feels really premium. I got compliments the same day I wore it.",
     name: "Hassan R.",
     detail: "Oud Maracuja",
   },
   {
-    quote: "Pink Poison is playful without being too sweet. I wore it to a brunch and ended up taking the bottle along for the evening because the scent stayed soft and noticeable all day.",
+    quote: "Pink Poison is sweet but not overwhelming. It's soft, feminine, and lasts way longer than I expected. I've been wearing it daily and it still feels special.",
     name: "Areeba M.",
     detail: "Pink Poison",
   },
   {
-    quote: "Executive feels polished from the first spray. It has a clean, confident edge that works especially well for meetings, but it never becomes too sharp or overpowering.",
+    quote: "Executive is exactly the kind of fragrance I wanted for office and formal events. Clean, confident, and masculine without being too strong. It gives a very put-together vibe.",
     name: "Usman K.",
     detail: "Executive",
   },
   {
-    quote: "Maverick is my everyday choice now. Fresh, bold and easy to wear, with a familiar Sauvage-style energy but enough character to feel like its own fragrance.",
+    quote: "Maverick has become my go-to fragrance. It's fresh, bold, and lasts for hours. If you like strong, clean scents that get noticed, this one is worth it.",
     name: "Bilal A.",
     detail: "Maverick",
   },
