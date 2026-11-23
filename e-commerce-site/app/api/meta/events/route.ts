@@ -25,8 +25,11 @@ export async function POST(request: Request) {
 
   const eventId =
     typeof body.eventId === "string" && body.eventId.trim()
-      ? body.eventId.trim()
+      ? body.eventId
       : undefined;
+  if (eventName === "AddToCart" && !eventId) {
+    return Response.json({ error: "AddToCart requires an event ID" }, { status: 400 });
+  }
   const eventSourceUrl =
     typeof body.eventSourceUrl === "string" && body.eventSourceUrl.trim()
       ? body.eventSourceUrl.trim()
