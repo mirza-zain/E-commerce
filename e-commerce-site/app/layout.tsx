@@ -4,10 +4,10 @@ import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { MetaPixelTracker } from "./components/MetaPixelTracker";
+import { META_PIXEL_ID } from "./lib/meta-customer-data";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || "G-SNV0D16RRY";
-const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1029616366831887";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),

@@ -42,12 +42,17 @@ export async function POST(request: Request) {
     body.customerData && typeof body.customerData === "object" && !Array.isArray(body.customerData)
       ? body.customerData
       : undefined;
+  const stringField = (value: unknown) => (typeof value === "string" ? value : undefined);
   const hashedCustomerData =
     customerData
       ? buildHashedUserData({
-          email: typeof customerData.email === "string" ? customerData.email : undefined,
-          phone: typeof customerData.phone === "string" ? customerData.phone : undefined,
-          externalId: typeof customerData.externalId === "string" ? customerData.externalId : undefined,
+          email: stringField(customerData.email),
+          phone: stringField(customerData.phone),
+          firstName: stringField(customerData.firstName),
+          lastName: stringField(customerData.lastName),
+          city: stringField(customerData.city),
+          country: stringField(customerData.country),
+          externalId: stringField(customerData.externalId),
         })
       : {};
 

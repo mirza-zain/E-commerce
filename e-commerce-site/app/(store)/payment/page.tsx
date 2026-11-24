@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import React, { useEffect, useRef, useState } from "react";
 import { BANK_TRANSFER_CONFIG } from "@/app/lib/bank-details";
 import { trackMetaEvent } from "@/app/lib/meta-pixel-events";
+import type { MetaCustomerData } from "@/app/lib/meta-customer-data";
 
 type Pricing = {
   subtotal: string
@@ -18,6 +19,28 @@ type Pricing = {
 type CheckoutField = "firstName" | "lastName" | "email" | "address" | "city" | "phoneNum"
 type PaymentMethod = "cod" | "bank_transfer"
 type FieldErrors = Partial<Record<CheckoutField, string>>
+
+type CheckoutFormData = {
+  firstName: string
+  lastName: string
+  email: string
+  country: string
+  phoneCountryCode: string
+  phoneNum: string
+  address: string
+  city: string
+}
+
+function toMetaCustomerData(form: CheckoutFormData): MetaCustomerData {
+  return {
+    email: form.email,
+    phone: `${form.phoneCountryCode}${form.phoneNum}`,
+    firstName: form.firstName,
+    lastName: form.lastName,
+    city: form.city,
+    country: form.country,
+  }
+}
 
 const namePattern = /^[A-Za-z][A-Za-z '-]{1,99}$/
 const addressPattern = /^[A-Za-z0-9][A-Za-z0-9 .,#/'-]{4,499}$/
@@ -72,7 +95,7 @@ export default function PaymentPage() {
   const [purchaseValue, setPurchaseValue] = useState<number | null>(null)
   const [purchaseEventId, setPurchaseEventId] = useState<string | null>(null)
   const purchaseTracked = useRef(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -272,10 +295,7 @@ export default function PaymentPage() {
       },
       undefined,
       true,
-      {
-        email: formData.email,
-        phone: `${formData.phoneCountryCode}${formData.phoneNum}`,
-      },
+      toMetaCustomerData(formData),
     )
 
     setSubmitting(true)
@@ -318,8 +338,11 @@ export default function PaymentPage() {
     trackMetaEvent("Purchase", {
       value: purchaseValue,
       currency: "PKR",
-    }, purchaseEventId ?? undefined, false)
-  }, [trackingId, purchaseValue, purchaseEventId])
+    }, purchaseEventId ?? undefined, false, {
+      ...toMetaCustomerData(formData),
+      externalId: trackingId,
+    })
+  }, [trackingId, purchaseValue, purchaseEventId, formData])
 
   if(trackingId) {
     return (

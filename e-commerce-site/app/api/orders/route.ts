@@ -366,6 +366,10 @@ export async function POST(request: Request) {
             const hashedUserData = buildHashedUserData({
                 email: result.email,
                 phone: result.phoneNum,
+                firstName: result.firstName,
+                lastName: result.lastName,
+                city: result.city,
+                country: result.country,
                 externalId: result.trackingId,
             })
 

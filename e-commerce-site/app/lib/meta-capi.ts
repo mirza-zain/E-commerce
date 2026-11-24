@@ -1,8 +1,21 @@
 import crypto from "node:crypto";
+import {
+  normalizeMetaCity,
+  normalizeMetaCountry,
+  normalizeMetaEmail,
+  normalizeMetaExternalId,
+  normalizeMetaName,
+  normalizeMetaPhone,
+  type MetaCustomerData,
+} from "./meta-customer-data";
 
 type CapiUserData = {
   em?: string[];
   ph?: string[];
+  fn?: string[];
+  ln?: string[];
+  ct?: string[];
+  country?: string[];
   client_ip_address?: string;
   client_user_agent?: string;
   fbp?: string;
@@ -27,16 +40,8 @@ function sha256(value: string) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
-function normalizeEmail(email?: string | null) {
-  if (!email) return undefined;
-  const normalized = email.trim().toLowerCase();
-  return normalized ? sha256(normalized) : undefined;
-}
-
-function normalizePhone(phone?: string | null) {
-  if (!phone) return undefined;
-  const digits = phone.replace(/\D/g, "");
-  return digits ? sha256(digits) : undefined;
+function hash(value?: string) {
+  return value ? sha256(value) : undefined;
 }
 
 function getPixelId() {
@@ -97,18 +102,22 @@ export function getRequestUserData(request: Request, eventSourceUrl?: string): C
   };
 }
 
-export function buildHashedUserData(input: {
-  email?: string | null;
-  phone?: string | null;
-  externalId?: string | null;
-}) {
-  const em = normalizeEmail(input.email);
-  const ph = normalizePhone(input.phone);
-  const external = input.externalId?.trim() ? sha256(input.externalId.trim()) : undefined;
+export function buildHashedUserData(input: MetaCustomerData) {
+  const em = hash(normalizeMetaEmail(input.email));
+  const ph = hash(normalizeMetaPhone(input.phone));
+  const fn = hash(normalizeMetaName(input.firstName));
+  const ln = hash(normalizeMetaName(input.lastName));
+  const ct = hash(normalizeMetaCity(input.city));
+  const country = hash(normalizeMetaCountry(input.country));
+  const external = hash(normalizeMetaExternalId(input.externalId));
 
   return {
     ...(em ? { em: [em] } : {}),
     ...(ph ? { ph: [ph] } : {}),
+    ...(fn ? { fn: [fn] } : {}),
+    ...(ln ? { ln: [ln] } : {}),
+    ...(ct ? { ct: [ct] } : {}),
+    ...(country ? { country: [country] } : {}),
     ...(external ? { external_id: [external] } : {}),
   } satisfies CapiUserData;
 }
